@@ -94,28 +94,36 @@ class TaskController(View):
 class ApiController(View):
     def get(self,request):
         return HttpResponse('api')
-    def post(self,request):
-        # possible methods:
-        # sync (Client Polls)
-        # exec (Server gives Task to execute)
-        # result (Client gives result set data back)
-        # idle (Server gives Client permission to idle)
+    def post(self,request,*args,**kwargs):
+        """
+        possible paths
+        /poll - Client -> Server - Client Polls and gives information about containers
+        /result/<task_id> - Client -> Serve - Client gives Server result of Task # back
+
+        possible datasets in json
+        json dictionary of containers - Client -> Server - Client gives information about containers
+        json dictionary with command to execute - Server -> Client - Server gives response to Client with information about what to execute
+        json dictionary with result of command - Cleint -> Server - Client gives result of executed command
+        """
         try:
             json_request=json.loads(request.body.decode('utf-8'))
             docker_host=self.check_api_key(json_request['api_key'])
         except(ValueError,KeyError):
             return HttpResponse("403")
-        if docker_host:
-            try:
-                if json_request['action']=='sync':
+        if docker_host and 'data' in json_request.keys():
+            if request.path=='/api/poll/':
+                # write data
+                # self.update_containers(json_request['data'])
+#                return HttpResponse(json_request['data'])
+                task=self.get_next_task(docker_host)
+                while not task:
+                    time.sleep(5)
                     task=self.get_next_task(docker_host)
-                    while not task:
-                        time.sleep(5)
-                        task=self.get_next_task(docker_host)
-                    return HttpResponse('{"exec":"WHAT"}')
-            except(KeyError):
+                return HttpResponse(json.dumps({'data':task.task_template.command.replace("@@IMAGE@@",task.docker_container.image)}))
+            elif 'task_id' in kwargs.keys():
+                return HttpResponse(json_request['data'])
+            else:
                 return HttpResponse("403")
-            return json.loads(response)
         else:
             return HttpResponse("403")
 
@@ -123,7 +131,6 @@ class ApiController(View):
         docker_host=DockerHost.objects.filter(api_key=api_key)
         if docker_host:
             return docker_host
-#    def get_docker_containers(self,docker_host):
     def get_next_task(self,docker_host):
         for docker_container in DockerContainer.objects.filter(docker_host=docker_host):
             try:
@@ -135,8 +142,8 @@ class ApiController(View):
 
 
 
-class SettingsController(View):
-    template_name='settings.html'
+class NotificationController(View):
+    template_name='notification.html'
     def get(self,request):
         return render(request,self.template_name,{'settings_active':'active'})
 

@@ -13,34 +13,42 @@
         </div>
     </div>
     <div class='row tb'>
-        <div class='col-md-2'>
+        <div class='col-md-4'>
             Description
         </div>
-        <div class='col-md-10'>
+        <div class='col-md-8'>
             {{ docker_container.description }}
         </div>
     </div>
     <div class='row tb'>
-        <div class='col-md-2'>
+        <div class='col-md-4'>
             Status
         </div>
-        <div class='col-md-10'>
+        <div class='col-md-8'>
             {{ docker_container.status }}
         </div>
     </div>
     <div class='row tb'>
-        <div class='col-md-2'>
+        <div class='col-md-4'>
             Last update
         </div>
-        <div class='col-md-10'> {{ docker_container.last_update }}
+        <div class='col-md-8'> {{ docker_container.last_update }}
         </div>
     </div>
     <div class='row tb'>
-        <div class='col-md-2'>
+        <div class='col-md-4'>
             Image
         </div>
-        <div class='col-md-10'>
+        <div class='col-md-8'>
             {{ docker_container.image }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-4'>
+            Running on Host:
+        </div>
+        <div class='col-md-8'>
+            <a href='/dashboard/host/{{docker_container.docker_host.id}}'>{{ docker_container.docker_host.name }}</a
         </div>
     </div>
     <div class='row tb'>

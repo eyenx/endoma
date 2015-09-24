@@ -27,11 +27,14 @@
             <div class='col-md-2'>
                 <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
             </div>
-            <div class='col-md-4'>
-                Servername: {{ docker_host.name }}
+            <div class='col-md-3'>
+                {{ docker_host.name }}
             </div>
-            <div class='col-md-5'>
-                Last status update: {{ docker_host.last_update }}
+            <div class='col-md-3'>
+                Last update: {{ docker_host.last_update }}
+            </div>
+            <div class='col-md-3'>
+                Status: {{ docker_host.last_update }}
             </div>
             <div class='col-md-1'>
                 <a href='/dashboard/host/{{ docker_host.id }}'><i class='glyphicon glyphicon-eye-open buttonglyphicon'></i></a>

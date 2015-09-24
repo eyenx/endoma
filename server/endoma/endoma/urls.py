@@ -1,17 +1,4 @@
-"""endoma URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.8/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
+"""
 """
 from django.conf.urls import include, url
 from django.contrib import admin
@@ -31,8 +18,10 @@ urlpatterns = [
     url(r'^dashboard/container/$', login_required(views.ContainerController.as_view()), name='container'),
     url(r'^dashboard/container/(?P<container_id>[0-9]+)/$', login_required(views.ContainerController.as_view()), name='container'),
     url(r'^dashboard/task/$', login_required(views.TaskController.as_view()), name='task'),
-    url(r'^settings/$', login_required(views.SettingsController.as_view()), name='settings'),
+    url(r'^dashboard/notification/$', login_required(views.NotificationController.as_view()), name='task'),
     url(r'^account/$', login_required(views.AccountController.as_view()), name='account'),
     url(r'^help/$', login_required(views.SimpleViewController.as_view(template_name='help.html')), name='help'),
     url(r'^api/$', csrf_exempt(views.ApiController.as_view()), name='api'),
+    url(r'^api/poll/$', csrf_exempt(views.ApiController.as_view()), name='api'),
+    url(r'^api/result/(?P<task_id>[0-9]+)/$', csrf_exempt(views.ApiController.as_view()), name='api'),
 ]

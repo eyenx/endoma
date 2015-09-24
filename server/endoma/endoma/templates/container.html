@@ -39,14 +39,14 @@
             <div class='col-md-2'>
                 <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
             </div>
-            <div class='col-md-2'>
-                Containername: {{ docker_container.name }}
+            <div class='col-md-3'>
+                {{ docker_container.name }}
             </div>
-            <div class='col-md-2'>
-                Last status update: {{ docker_container.last_update }}
+            <div class='col-md-3'>
+                Last update: {{ docker_container.last_update }}
             </div>
-            <div class='col-md-2'>
-                status: {{ docker_container.status }}
+            <div class='col-md-3'>
+                Status: {{ docker_container.status }}
             </div>
             <div class='col-md-1'>
                 <a href='/dashboard/container/{{ docker_container.id }}'><i class='glyphicon glyphicon-eye-open buttonglyphicon'></i></a>
