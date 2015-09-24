@@ -1,0 +1,59 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+{% include '_navleft.html' %}
+<div class='col-md-9'>
+        <div class='row' style='margin-bottom:20px'>
+		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Add Container</a>
+		 <div id="element-host-add" class="collapse">
+					<div class='panel-body'>
+    	                   <form class='form-inline' role="form" action="/dashboard/container/" method="post">{% csrf_token %}
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputName">Name</label>
+                                   <input type="text" class="form-control" id="inputName" name="containername" placeholder="Name">
+                               </div>
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputDescription">Beschreibung</label>
+                                   <input type="text" class="form-control" id="inputDescription" name="containerdescription" placeholder="Beschreibung">
+                               </div>
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputImage">Image</label>
+                                   <input type="text" class="form-control" id="inputImage" name="containerimage" placeholder="Image">
+                               </div>
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputHost">Host</label>
+                                   <select class="form-control" id="InputHost" name="containerhost" placeholder="Host">
+                                       {% for docker_host in docker_host_list %}
+                                       <option value="{{ docker_host.id }}">{{ docker_host.name }}</option>
+                                       {% endfor %}
+                                   </select>
+                               </div>
+                               <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
+                           </form>
+                    </div>
+				</div>
+            </div>
+{% for docker_container in docker_container_list %}
+    <div class='row well'>
+            <div class='col-md-2'>
+                <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+            </div>
+            <div class='col-md-2'>
+                Containername: {{ docker_container.name }}
+            </div>
+            <div class='col-md-2'>
+                Last status update: {{ docker_container.last_update }}
+            </div>
+            <div class='col-md-2'>
+                status: {{ docker_container.status }}
+            </div>
+            <div class='col-md-1'>
+                <a href='/dashboard/container/{{ docker_container.id }}'><i class='glyphicon glyphicon-pencil buttonglyphicon'></i></a>
+                <a href='#'><i class='glyphicon glyphicon-trash buttonglyphicon'></i></a>
+            </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

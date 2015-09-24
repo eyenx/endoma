@@ -1,0 +1,45 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+{% include '_navleft.html' %}
+<div class='col-md-9'>
+    <div class='row' style='margin-bottom:20px'>
+		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Add Host</a>
+		 <div id="element-host-add" class="collapse">
+					<div class='panel-body'>
+    	                   <form class='form-inline' role="form" action="/dashboard/host/" method="post">{% csrf_token %}
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputName">Name</label>
+                                   <input type="text" class="form-control" id="inputName" name="hostname" placeholder="Name">
+                               </div>
+                               <div class="form-group">
+                                   <label class="sr-only" for="inputDescription">Beschreibung</label>
+                                   <input type="text" class="form-control" id="inputDescription" name="hostdescription" placeholder="Beschreibung">
+                               </div>
+                               <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
+                           </form>
+                    </div>
+				</div>
+            </div>
+    {% for docker_host in docker_host_list %}
+    <div class='row well'>
+            <div class='col-md-2'>
+                <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+            </div>
+            <div class='col-md-4'>
+                Servername: {{ docker_host.name }}
+            </div>
+            <div class='col-md-5'>
+                Last status update: {{ docker_host.last_update }}
+            </div>
+            <div class='col-md-1'>
+                <a href='/dashboard/host/{{ docker_host.id }}'><i class='glyphicon glyphicon-pencil buttonglyphicon'></i></a>
+                <a href='#'><i class='glyphicon glyphicon-refresh buttonglyphicon'></i></a>
+                <a href='#'><i class='glyphicon glyphicon-trash buttonglyphicon'></i></a>
+            </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

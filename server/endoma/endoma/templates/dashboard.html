@@ -1,0 +1,55 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+<div class='row'>
+<div class='col-md-10 col-md-offset-1'>
+    <div class='row'>
+        <div class='col-md-5 well col-md-offset-1'>
+            <h2>
+    Docker Hosts
+</h2>
+<p>
+    Text zu Docker Hosts
+</p>
+<p>
+    <a class="btn" href="/dashboard/host">Weiter »</a>
+</p>
+        </div>
+        <div class='col-md-5 well col-md-offset-1'>
+            <h2>
+    Docker Containers
+</h2>
+<p>
+    Text zu Docker Containers
+</p>
+<p>
+    <a class="btn" href="/dashboard/container">Weiter »</a>
+</p>
+        </div>
+        <div class='col-md-5 well col-md-offset-1'>
+            <h2>
+    Tasks
+</h2>
+<p>
+    Text zu Tasks
+</p>
+<p>
+    <a class="btn" href="/dashboard/task">Weiter »</a>
+</p>
+        </div>
+
+        <div class='col-md-5 well col-md-offset-1'>
+            <h2>
+    Benachrichtigungen
+</h2>
+<p>
+    Text zu Benachrichtigungen
+</p>
+<p>
+    <a class="btn" href="/dashboard/notification">Weiter »</a>
+</p>
+</div>
+</div>
+</div>
+{% endblock %}

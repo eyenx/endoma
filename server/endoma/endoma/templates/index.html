@@ -1,0 +1,25 @@
+{% extends '_default.html' %}
+{% block title %} - Startseite {% endblock %}
+{% block content %}
+{% include '_startheader.html' %}
+	<div class='row'>
+        <div class='col-md-1'></div>
+		<div class='col-md-10'>
+            <div class='jumbotron'>
+				<h2>
+					Herzlich willkommen zu EnDoMa
+				</h2>
+				<p>
+					<b>En</b>hanced <b>Do</b>cker <b>Ma</b>nagement ist eine Webapplikation welche dir das Leben mit Docker vereinfacht.
+
+                    Zur Zeit befinden wir uns in einer geschlossene Alpha Phase. Ein Login ist nur mittels Einladung möglich.
+				</p>
+                <p>Um weiterzufahren bitte einloggen</P>
+				<p>
+					<a class='btn btn-primary btn-large' href='/login'>Einloggen</a>
+				</p>
+            </div>
+		</div>
+        <div class='col-md-1'></div>
+</div>
+{% endblock %}
