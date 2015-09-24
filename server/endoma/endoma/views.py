@@ -41,14 +41,21 @@ class LoginController(View):
 
 class HostController(View):
     template_name='host.html'
-    def get(self,request):
-#   if not docker_host_id:
+    def get(self,request,*args, **kwargs):
+        # If host_id was given, return detail_host.html
+        # example: dashboard/host/7/
+        if 'host_id' in kwargs.keys():
+            self.template_name='detail_host.html'
+            docker_host=DockerHost.objects.get(id=kwargs['host_id'])
+            return render(request,self.template_name,{'host_active':'active','dashboard_active':'active','docker_host':docker_host})
+        # else return list of hosts
+        # example: dashboard/host/
         docker_host_list=DockerHost.objects.filter(user=request.user)
         return render(request, self.template_name,{'docker_host_list':docker_host_list,'host_active':'active','dashboard_active':'active'})
 #    else:
 #        docker_host=DockerHost.objects.all()
 #        return render(request, 'host_detail.html',{'docker_host':docker_host})
-    def post(self,request):
+    def post(self,request,*args,**kwargs):
         docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key="")
         # generate 128 character API Key
         for _ in range(32):
@@ -60,7 +67,11 @@ class HostController(View):
 
 class ContainerController(View):
     template_name='container.html'
-    def get(self,request):
+    def get(self,request,*args,**kwargs):
+        if 'container_id' in kwargs.keys():
+            self.template_name='detail_container.html'
+            docker_container=DockerContainer.objects.get(id=kwargs['container_id'])
+            return render(request,self.template_name,{'container_active':'active','dashboard_active':'active','docker_container':docker_container})
         docker_host_list=DockerHost.objects.filter(user=request.user)
         docker_container_list=list()
         for docker_host in docker_host_list:

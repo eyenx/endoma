@@ -1,0 +1,56 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+{% include '_navleft.html' %}
+<div class='col-md-6 well'>
+    <div class='row'>
+        <div class='col-md-2'>
+            <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+        </div>
+        <div class='col-md-10 h3'>
+            {{ docker_container.name }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Description
+        </div>
+        <div class='col-md-10'>
+            {{ docker_container.description }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Status
+        </div>
+        <div class='col-md-10'>
+            {{ docker_container.status }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Last update
+        </div>
+        <div class='col-md-10'> {{ docker_container.last_update }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Image
+        </div>
+        <div class='col-md-10'>
+            {{ docker_container.image }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-6'>
+            <button class='btn btn-warning'>Stop Container</button>
+        </div>
+        <div class='col-md-6'>
+            <button class='btn btn-danger'>Delete Container</button>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

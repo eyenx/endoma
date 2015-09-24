@@ -1,0 +1,54 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+{% include '_navleft.html' %}
+<div class='col-md-6 well'>
+    <div class='row'>
+        <div class='col-md-2'>
+            <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+        </div>
+        <div class='col-md-10 h3'>
+            {{ docker_host.name }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Description
+        </div>
+        <div class='col-md-10'>
+            {{ docker_host.description }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Status
+        </div>
+        <div class='col-md-10'>
+            {{ docker_host.status }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            Last update
+        </div>
+        <div class='col-md-10'>
+            {{ docker_host.last_update }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-2'>
+            API Key
+        </div>
+        <div class='col-md-10'>
+            {{ docker_host.api_key }}
+        </div>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-6'>
+            <button class='btn btn-danger'>Delete Host</button>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -44,6 +44,9 @@ div.header{
     margin-left:10px;
     margin-right:10px;
 }
+div.tb{
+    margin-top:20px;
+}
 li#userdisplay{
     background-color: rgba(0, 0, 0, 0);
     border-bottom-left-radius: 4px;
