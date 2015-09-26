@@ -1,0 +1,127 @@
+{% extends '_default.html' %}
+{% block title %} - Dashboard {% endblock %}
+{% block content %}
+{% include '_header.html' %}
+{% include '_navleft.html' %}
+<div class='col-md-9'>
+    <div class='row'>
+        <h3>Docker Container</h3>
+            <form class='form-inline' role="form">
+                Filtern:
+                <div class="form-group">
+                   <label class="sr-only" for="filterHost">Filtern nach Container</label>
+                       <select class="form-control" id="filterHost" name="filterhost" placeholder="Host">
+                           {% for docker_container in docker_container_list %}
+                           <option value="{{ docker_container.id }}">{{ docker_container.name }}</option>
+                           {% endfor %}
+                        </select>
+               </div>
+           </form>
+    </div>
+    <table class='table table-striped'>
+        <thead>
+        <tr>
+            <td>
+                ID
+            </td>
+            <td>
+                Zeitpunkt
+            </td>
+            <td>
+                Status vorher
+            </td>
+            <td>
+                Status nachher
+            </td>
+            <td>
+                Docker Container
+            </td>
+            <td>
+                Docker Host
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for container_status in container_statushistory %}
+        <tr>
+            <td>
+                {{ container_status.id }}
+            </td>
+            <td>
+                {{ container_status.timestamp }}
+            </td>
+            <td>
+                {{ container_status.status_before }}
+            </td>
+            <td>
+                {{ container_status.status_after }}
+            </td>
+            <td>
+                <a href='/dashboard/container/{{ container_status.docker_container.id }}'>{{ container_status.docker_container.name }}</a>
+            </td>
+            <td>
+                <a href='/dashboard/host/{{ container_status.docker_container.docker_host.id }}'>{{ container_status.docker_container.docker_host.name }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <div class='row'>
+        <h3>Docker Host</h3>
+            <form class='form-inline' role="form">
+                Filtern:
+                <div class="form-group">
+                   <label class="sr-only" for="filterHost">Filtern nach Host</label>
+                       <select class="form-control" id="filterHost" name="filterhost" placeholder="Host">
+                           {% for docker_host in docker_host_list %}
+                           <option value="{{ docker_host.id }}">{{ docker_host.name }}</option>
+                           {% endfor %}
+                        </select>
+               </div>
+           </form>
+    </div>
+    <table class='table table-striped'>
+        <thead>
+        <tr>
+            <td>
+                ID
+            </td>
+            <td>
+                Zeitpunkt
+            </td>
+            <td>
+                Status vorher
+            </td>
+            <td>
+                Status nachher
+            </td>
+            <td>
+                Docker Host
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for host_status in host_statushistory %}
+        <tr>
+            <td>
+                {{ host_status.id }}
+            </td>
+            <td>
+                {{ host_status.timestamp }}
+            </td>
+            <td>
+                {{ host_status.status_before }}
+            </td>
+            <td>
+                {{ host_status.status_after }}
+            </td>
+            <td>
+                <a href='/dashboard/host/{{ host_status.docker_host.id }}'>{{ host_status.docker_host.name }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+</div>
+{% endblock %}

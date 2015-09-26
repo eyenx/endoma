@@ -6,7 +6,11 @@
 <div class='col-md-6 well'>
     <div class='row'>
         <div class='col-md-2'>
-            <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+            {% if docker_container.status == 'online' %}
+            <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
+            {% else %}
+            <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
+            {% endif %}
         </div>
         <div class='col-md-10 h3'>
             {{ docker_container.name }}
@@ -52,11 +56,16 @@
         </div>
     </div>
     <div class='row tb'>
-        <div class='col-md-6'>
-            <button class='btn btn-warning'>Stop Container</button>
+    </div>
+    <div class='row tb'>
+        <div class='col-md-4'>
+            <button class='btn btn-default'>Start Container</button>
         </div>
-        <div class='col-md-6'>
-            <button class='btn btn-danger'>Delete Container</button>
+        <div class='col-md-4'>
+            <button class='btn btn-default'>Stop Container</button>
+        </div>
+        <div class='col-md-4'>
+            <button class='btn btn-default'>Delete Container</button>
         </div>
     </div>
 </div>

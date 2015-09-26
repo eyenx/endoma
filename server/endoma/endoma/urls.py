@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^dashboard/container/$', login_required(views.ContainerController.as_view()), name='container'),
     url(r'^dashboard/container/(?P<container_id>[0-9]+)/$', login_required(views.ContainerController.as_view()), name='container'),
     url(r'^dashboard/task/$', login_required(views.TaskController.as_view()), name='task'),
-    url(r'^dashboard/notification/$', login_required(views.NotificationController.as_view()), name='task'),
+    url(r'^dashboard/history/$', login_required(views.StatusHistoryController.as_view()), name='task'),
     url(r'^account/$', login_required(views.AccountController.as_view()), name='account'),
     url(r'^help/$', login_required(views.SimpleViewController.as_view(template_name='help.html')), name='help'),
     url(r'^api/$', csrf_exempt(views.ApiController.as_view()), name='api'),

@@ -4,6 +4,60 @@
 {% include '_header.html' %}
 {% include '_navleft.html' %}
 <div class='col-md-9'>
+    <table class='table table-striped'>
+        <thead>
+        <tr>
+            <td>
+                ID
+            </td>
+            <td>
+                Type
+            </td>
+            <td>
+                Status
+            </td>
+            <td>
+                Erstelldatum
+            </td>
+            <td>
+                Letzte Aktualisierung
+            </td>
+            <td>
+                Docker-Container
+            </td>
+            <td>
+                Docker-Host
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for task in task_list %}
+        <tr>
+            <td>
+                {{ task.id }}
+            </td>
+            <td>
+                {{ task.task_template.name }}
+            </td>
+            <td>
+                {{ task.status }}
+            </td>
+            <td>
+                {{ task.create_timestamp }}
+            </td>
+            <td>
+                {{ task.update_timestamp }}
+            </td>
+            <td>
+                <a href='/dashboard/container/{{ task.docker_container.id }}/'>{{ task.docker_container.name }}</a>
+            </td>
+            <td>
+                <a href='/dashboard/host/{{ task.docker_container.docker_host.id }}/'>{{ task.docker_container.docker_host.name }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
 </div>
 </div>
 {% endblock %}

@@ -6,7 +6,11 @@
 <div class='col-md-6 well'>
     <div class='row'>
         <div class='col-md-2'>
-            <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+            {% if docker_host.status == 'online' %}
+            <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
+            {% else %}
+            <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
+            {% endif %}
         </div>
         <div class='col-md-10 h3'>
             {{ docker_host.name }}
@@ -45,8 +49,10 @@
         </div>
     </div>
     <div class='row tb'>
+    </div>
+    <div class='row tb'>
         <div class='col-md-6'>
-            <button class='btn btn-danger'>Delete Host</button>
+            <button class='btn btn-default'>Delete Host</button>
         </div>
     </div>
 </div>

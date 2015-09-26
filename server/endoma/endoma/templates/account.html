@@ -2,7 +2,9 @@
 {% block title %} - Dashboard {% endblock %}
 {% block content %}
 {% include '_header.html' %}
-<div class='col-md-6 col-md-offset-3 well'>
+<div class='col-md-5 col-md-offset-4'>
+    <h3> Benutzerkonto Informationen</h3>
+    <div class='well'>
 <div class='row tb'>
     <div class='col-md-6'>
         Username
@@ -26,6 +28,7 @@
     <div class='col-md-6'>
         {{ user.first_name }} {{ user.last_name }}
     </div>
+</div>
 </div>
 </div>
 {% endblock %}

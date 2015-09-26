@@ -25,7 +25,11 @@
     {% for docker_host in docker_host_list %}
     <div class='row well'>
             <div class='col-md-2'>
-                <i class='glyphicon glyphicon-alert statusglyphicon alertglyphicon'></i>
+                {% if docker_host.status == 'online' %}
+                <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
+                {% else %}
+                <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
+                {% endif %}
             </div>
             <div class='col-md-3'>
                 {{ docker_host.name }}
@@ -34,7 +38,7 @@
                 Last update: {{ docker_host.last_update }}
             </div>
             <div class='col-md-3'>
-                Status: {{ docker_host.last_update }}
+                Status: {{ docker_host.status }}
             </div>
             <div class='col-md-1'>
                 <a href='/dashboard/host/{{ docker_host.id }}'><i class='glyphicon glyphicon-eye-open buttonglyphicon'></i></a>
