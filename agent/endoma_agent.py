@@ -7,17 +7,34 @@ import time
 
 api_url='http://localhost:8080/api/'
 timeout=60
-api_key='vlQpLavv0UWAFSlBKH75fhhQqVe2XLbn'
+api_key='0hH1WdHIiOUSaOvh13GZ2GVrz74ZFGS6'
 docker_client=docker.Client(base_url='unix://var/run/docker.sock')
 
 while True:
     containers=docker_client.containers(all=True)
-    data={'api_key':api_key,'data':containers}
+    info=docker_client.version()
+    data={'api_key':api_key,'data':{'info':info,'containers':containers}}
     headers={'content-type':'application/json'}
     try:
         response=requests.post(api_url+'poll/',data=json.dumps(data),headers=headers,timeout=timeout)
         print(response.text)
         response_json=json.loads(response.text)
+        task_id=response_json['data']['task_id']
+        command='docker_client.'+response_json['data']['command']
+        # prepare response
+        response_data={'api_key':api_key}
+        # try to exec
+        try:
+            response_data['data']=eval(command)
+        except(docker.errors.NotFound,requests.exceptions.ConnectionError):
+            response_data['data']='Failed'
+
+        # send result to API
+        print(response_data)
+        response=requests.post(api_url+'result/'+str(task_id)+"/",data=json.dumps(response_data),headers=headers,timeout=timeout)
+        print(response.text)
+
     except(requests.exceptions.ReadTimeout,requests.exceptions.ConnectionError):
         pass
     time.sleep(5)
+
