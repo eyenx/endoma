@@ -6,10 +6,12 @@
 <div class='col-md-6 well'>
     <div class='row'>
         <div class='col-md-2'>
-            {% if docker_container.status == 'online' %}
+            {% if docker_container.status == 'Running' %}
             <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
+            {% elif docker_container.status == 'Stopped' %}
+            <i class='glyphicon glyphicon-exclamation-sign statusglyphicon warningglyphicon'></i>
             {% else %}
-            <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
+            <i class='glyphicon glyphicon-question-sign statusglyphicon infoglyphicon'></i>
             {% endif %}
         </div>
         <div class='col-md-10 h3'>
@@ -66,14 +68,15 @@
     <div class='row tb'>
     </div>
     <div class='row tb'>
+        {% csrf_token %}
         <div class='col-md-4'>
-            <button class='btn btn-default'>Start Container</button>
+            <button class='btn btn-default' id='startbtn'>Start Container</button>
         </div>
         <div class='col-md-4'>
-            <button class='btn btn-default'>Stop Container</button>
+            <button class='btn btn-default' id='stopbtn'>Stop Container</button>
         </div>
         <div class='col-md-4'>
-            <button class='btn btn-default'>Delete Container</button>
+            <button class='btn btn-default' id='deletebtn'>Delete Container</button>
         </div>
     </div>
 </div>

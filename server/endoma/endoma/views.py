@@ -175,18 +175,32 @@ class ContainerController(View):
         # now create the tasks
         # first pull the image
         task_template=TaskTemplate.objects.get(name='pull')
-        task=Task(task_template=task_template,docker_container=docker_container)
+        task=Task(task_template=task_template,docker_container=docker_container,status='Ready')
         task.save()
         # afterwards create the container
         task_template=TaskTemplate.objects.get(name='create')
-        task=Task(task_template=task_template,docker_container=docker_container)
+        task=Task(task_template=task_template,docker_container=docker_container,status='Ready')
         task.save()
         # redirect to the container view
         return HttpResponseRedirect('/dashboard/container')
     # HTTP DELETE (used for deletion of containers)
     # TODO
-    def delete(self,request):
-        return HttpResponse("test")
+    def delete(self,request,*args,**kwargs):
+        return HttpResponse("403")
+    # HTTP PUT
+    # used for start and stop
+    def put(self,request,*args,**kwargs):
+        if "container_id" in kwargs.keys():
+            try:
+                request_json=json.loads(request.body.decode('utf-8'))
+                if 'action' in request_json.keys():
+                    # create task with given action (start or stop)
+                    task=Task(task_template=TaskTemplate.objects.get(name=request_json['action']),docker_container=DockerContainer.objects.get(id=kwargs['container_id']),status='Ready')
+                    task.save()
+                    return HttpResponse()
+            except(KeyError,ValueError):
+                return HttpResponse("403")
+        return HttpResponse("403")
     """
     custom methods of ContainerController
     """
@@ -311,7 +325,10 @@ class ApiController(View):
                     # try again
                     task=TaskController().get_next_task(docker_host)
                 # if there is a task, return it to the agent
-                return HttpResponse(json.dumps({'data':{'task_id':task.id,'command':task.task_template.command.replace("@@IMAGE@@",'"'+task.docker_container.image+':latest"')}}))
+                # but first replace the tags
+                command=task.task_template.command.replace('@@IMAGE@@','"'+task.docker_container.image+':latest"')
+                command=command.replace('@@CONTAINERID@@','"'+task.docker_container.container_id+'"')
+                return HttpResponse(json.dumps({'data':{'task_id':task.id,'command':command}}))
             # if the request gives a task_id
             elif 'task_id' in kwargs.keys():
                 # get results from request

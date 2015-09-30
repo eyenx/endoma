@@ -34,6 +34,12 @@ div.header{
 .alertglyphicon{
     color:#D9534F;
 }
+.warningglyphicon{
+    color:#F0AD4E;
+}
+.infoglyphicon{
+   color:#337AB7;
+}
 .okayglyphicon{
    color:#5CB85C;
 }

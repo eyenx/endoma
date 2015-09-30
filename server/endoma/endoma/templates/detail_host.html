@@ -59,8 +59,9 @@
     <div class='row tb'>
     </div>
     <div class='row tb'>
+        {% csrf_token %}
         <div class='col-md-6'>
-            <button class='btn btn-default'>Delete Host</button>
+            <button class='btn btn-default' id='deletebtn'>Delete Host</button>
         </div>
     </div>
 </div>
