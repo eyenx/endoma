@@ -169,7 +169,7 @@ class ContainerController(View):
         # get given DockerHost
         docker_host=DockerHost.objects.get(id=request.POST['containerhost'])
         # create new docker_container
-        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],ports=request.POST['containerport'],status='none',docker_host=docker_host)
+        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],ports=request.POST['containerport'],status='none',docker_host=docker_host,container_id='',status='')
         # save it to the database
         docker_container.save()
         # now create the tasks
