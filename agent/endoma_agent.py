@@ -16,25 +16,27 @@ while True:
     data={'api_key':api_key,'data':{'info':info,'containers':containers}}
     headers={'content-type':'application/json'}
     try:
+        print('connecting to '+api_url)
         response=requests.post(api_url+'poll/',data=json.dumps(data),headers=headers,timeout=timeout)
-        print(response.text)
         response_json=json.loads(response.text)
         task_id=response_json['data']['task_id']
+        print('received Task ID: '+str(task_id))
         command='docker_client.'+response_json['data']['command']
         # prepare response
         response_data={'api_key':api_key}
         # try to exec
+        print('trying to exec: '+command)
         try:
             response_data['data']=eval(command)
         except(docker.errors.NotFound,requests.exceptions.ConnectionError):
             response_data['data']='Failed'
 
         # send result to API
-        print(response_data)
+        print('sending result to '+api_url)
         response=requests.post(api_url+'result/'+str(task_id)+"/",data=json.dumps(response_data),headers=headers,timeout=timeout)
-        print(response.text)
 
-    except(requests.exceptions.ReadTimeout,requests.exceptions.ConnectionError):
-        pass
+
+    except(requests.exceptions.ReadTimeout,requests.exceptions.ConnectionError,ValueError,KeyError):
+        print('connection closed, retrying in 5 seconds')
     time.sleep(5)
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate,login,logout
 from django.views.generic import View
 # import needed HTTP Classes from django framework
-from django.http import HttpResponse,HttpRequest,HttpResponseRedirect
+from django.http import HttpResponse,HttpRequest,HttpResponseRedirect,HttpResponseForbidden,JsonResponse
 # import needed login decorators from django framework
 from django.contrib.auth.decorators import login_required
 # django utils timezone to genarate datetime objects
@@ -97,7 +97,7 @@ class HostController(View):
 #        docker_host=DockerHost.objects.all()
 #        return render(request, 'host_detail.html',{'docker_host':docker_host})
     def post(self,request,*args,**kwargs):
-        docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key="",status='offline')
+        docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key='',status='offline')
         # generate 128 character API Key
         for _ in range(32):
             docker_host.api_key+=random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits)
@@ -169,7 +169,7 @@ class ContainerController(View):
         # get given DockerHost
         docker_host=DockerHost.objects.get(id=request.POST['containerhost'])
         # create new docker_container
-        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],ports=request.POST['containerport'],status='none',docker_host=docker_host,container_id='',status='')
+        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],ports=request.POST['containerport'],docker_host=docker_host,container_id='',status='')
         # save it to the database
         docker_container.save()
         # now create the tasks
@@ -186,11 +186,11 @@ class ContainerController(View):
     # HTTP DELETE (used for deletion of containers)
     # TODO
     def delete(self,request,*args,**kwargs):
-        return HttpResponse("403")
+        return HttpResponseForbidden()
     # HTTP PUT
     # used for start and stop
     def put(self,request,*args,**kwargs):
-        if "container_id" in kwargs.keys():
+        if 'container_id' in kwargs.keys():
             try:
                 request_json=json.loads(request.body.decode('utf-8'))
                 if 'action' in request_json.keys():
@@ -199,23 +199,15 @@ class ContainerController(View):
                     task.save()
                     return HttpResponse()
             except(KeyError,ValueError):
-                return HttpResponse("403")
-        return HttpResponse("403")
+                return HttpResponseForbidden()
+        return HttpResponseForbidden()
     """
     custom methods of ContainerController
     """
     # Get all containers of given user
     def get_all(self,user):
-        # instantiate a list
-        docker_container_list=list()
-        # for every docker_host of the user
-        for docker_host in DockerHost.objects.filter(user=user):
-            # for every docker_container of that host
-           for docker_container in DockerContainer.objects.filter(docker_host=docker_host):
-               # add this container to the list
-               docker_container_list.append(docker_container)
-        # return the list
-        return docker_container_list
+        # return all DockerContainer which are related to the list of DockerHost owned by the user
+        return DockerContainer.objects.filter(docker_host__in=DockerHost.objects.filter(user=user)).order_by('id')
     def get_by_container_id(self,container_id):
         return DockerContainer.objects.filter(container_id=container_id).first()
     def update_status(self,docker_container,status):
@@ -258,22 +250,11 @@ class TaskController(View):
     Custom methods of TaskController
     """
     def get_all_for_user(self,user):
-        task_list=list()
-        for docker_container in ContainerController().get_all(user):
-            for task in Task.objects.filter(docker_container=docker_container):
-                task_list.append(task)
-        return task_list
-    def get_all_for_docker_host(self,docker_host):
-        task_list=list()
-        for docker_container in DockerContainer.objects.filter(docker_host=docker_host):
-            for task in Task.objects.filter(docker_container=docker_container).order_by('id'):
-                task_list.append(task)
-        return task_list
+        # return all Tasks for the user ordered by the id DESC
+        return Task.objects.filter(docker_container__in=ContainerController().get_all(user)).order_by('-id')
     def get_next_task(self,docker_host):
-        for task in self.get_all_for_docker_host(docker_host):
-            if task.status=="Ready":
-                return task
-        return None
+        # return the first task for the docker-host which is Ready
+        return Task.objects.filter(docker_container__in=DockerContainer.objects.filter(docker_host=docker_host),status='Ready').order_by('id').first()
 
 
 
@@ -287,10 +268,7 @@ class ApiController(View):
     # HTTP GET
     def get(self,request):
         # 403 (Forbidden) bei GET
-#        return HttpResponse('403')
-         a=HostController()
-         dh=DockerHost.objects.get(id=1)
-         return HttpResponse(a.get_api_key(dh))
+        return HttpResponseForbidden()
     # HTTP POST
     def post(self,request,*args,**kwargs):
         """
@@ -307,7 +285,7 @@ class ApiController(View):
             json_request=json.loads(request.body.decode('utf-8'))
             docker_host=HostController().check_api_key(json_request['api_key'])
         except(ValueError,KeyError):
-            return HttpResponse("403")
+            return HttpResponseForbidden()
         if docker_host and 'data' in json_request.keys():
             HostController().update_status(docker_host,'online')
             # if the requests is on /api/poll
@@ -318,8 +296,13 @@ class ApiController(View):
                 self.update_containers(json_request['data']['containers'])
                 # get next Task
                 task=TaskController().get_next_task(docker_host)
-                # if there is no task ready
-                while not task:
+                # as long as there is no task ready and the timeout of 60 seconds isn't reached
+                # (sleeping for 5 seconds, makes the loop work 12 times)
+                loop_count=12
+                while not task and loop_count:
+                    loop_count-=1
+                    if not loop_count:
+                        return HttpResponse()
                     # sleep for 5 seconds
                     time.sleep(5)
                     # try again
@@ -328,19 +311,22 @@ class ApiController(View):
                 # but first replace the tags
                 command=task.task_template.command.replace('@@IMAGE@@','"'+task.docker_container.image+':latest"')
                 command=command.replace('@@CONTAINERID@@','"'+task.docker_container.container_id+'"')
-                return HttpResponse(json.dumps({'data':{'task_id':task.id,'command':command}}))
+                task.status='Sent'
+                task.save()
+                #return HttpResponse(json.dumps({'data':{'task_id':task.id,'command':command}}))
+                return JsonResponse({'data':{'task_id':task.id,'command':command}})
             # if the request gives a task_id
             elif 'task_id' in kwargs.keys():
                 # get results from request
                 task=Task.objects.get(id=kwargs['task_id'])
                 self.check_result(json_request['data'],task)
                 # in all other cases, return HTTP 403
-                return HttpResponse("OK")
+                return HttpResponse('OK')
             else:
-                return HttpResponse("403")
+                return HttpResponseForbidden()
         # in all other cases, return HTTP 403
         else:
-            return HttpResponse("403")
+            return HttpResponseForbidden()
     """
     Custom methods of APIController
     """
@@ -352,9 +338,9 @@ class ApiController(View):
             if docker_container:
             # update its status
             #  two possible status:
-            #  Up about 1 hour = "Running"
-            #  Exited 5 seconds ago = "Stopped"
-            #  Created = "Stopped"
+            #  Up about 1 hour = 'Running'
+            #  Exited 5 seconds ago = 'Stopped'
+            #  Created = 'Stopped'
                 if container['Status'].startswith('Up '):
                     ContainerController().update_status(docker_container,'Running')
                 else:
@@ -367,10 +353,10 @@ class ApiController(View):
         if data!='Failed':
             if task_type == 'pull':
                 try:
-                    last_line=data.split("\r\n")[-2]
+                    last_line=data.split('\r\n')[-2]
                     result_json=json.loads(last_line)
-                    if "Status: Downloaded newer image for" in result_json["status"] or "Status: Image is up to date" in result_json["status"]:
-                        task.status="Success"
+                    if 'Status: Downloaded newer image for' in result_json['status'] or 'Status: Image is up to date' in result_json['status']:
+                        task.status='Success'
                 except(ValueError,KeyError):
                     pass
             elif task_type == 'create':
@@ -406,11 +392,11 @@ class StatusHistoryController(View):
         docker_container_list=ContainerController().get_all(request.user)
         host_statushistory=list()
         for docker_host in docker_host_list:
-            for host_status in HostStatusHistory.objects.filter(docker_host=docker_host):
+            for host_status in HostStatusHistory.objects.filter(docker_host=docker_host).order_by('id'):
                 host_statushistory.append(host_status)
         container_statushistory=list()
         for docker_container in docker_container_list:
-            for container_status in ContainerstatusHistory.objects.filter(docker_container=docker_container):
+            for container_status in ContainerstatusHistory.objects.filter(docker_container=docker_container).order_by('id'):
                 container_statushistory.append(container_status)
         # fill directory context
         self.context['docker_host_list']=docker_host_list

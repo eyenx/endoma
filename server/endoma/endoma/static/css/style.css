@@ -53,6 +53,9 @@ div.header{
 div.tb{
     margin-top:20px;
 }
+tr.warntr{
+    background-color:#F0AD4E !important;
+}
 li#userdisplay{
     background-color: rgba(0, 0, 0, 0);
     border-bottom-left-radius: 4px;

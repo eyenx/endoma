@@ -6,17 +6,8 @@
 <div class='col-md-9'>
     <div class='row'>
         <h3>Docker Container</h3>
-            <form class='form-inline' role="form">
-                Filtern:
-                <div class="form-group">
-                   <label class="sr-only" for="filterHost">Filtern nach Container</label>
-                       <select class="form-control" id="filterHost" name="filterhost" placeholder="Host">
-                           {% for docker_container in docker_container_list %}
-                           <option value="{{ docker_container.id }}">{{ docker_container.name }}</option>
-                           {% endfor %}
-                        </select>
-               </div>
-           </form>
+    <div class="col-md-3 input-group">
+    <input id="filter_table" type="text" class="form-control" placeholder="Filtern nach...">
     </div>
     <table class='table table-striped'>
         <thead>
@@ -41,9 +32,13 @@
             </td>
         </tr>
         </thead>
-        <tbody>
+        <tbody class='filter_table'>
         {% for container_status in container_statushistory %}
+        {% if container_status.status_before == 'Running' and container_status.status_after != 'Running' %}
+        <tr class='warntr'>
+        {% else %}
         <tr>
+        {% endif %}
             <td>
                 {{ container_status.id }}
             </td>
@@ -67,18 +62,9 @@
     </tbody>
     </table>
     <div class='row'>
-        <h3>Docker Host</h3>
-            <form class='form-inline' role="form">
-                Filtern:
-                <div class="form-group">
-                   <label class="sr-only" for="filterHost">Filtern nach Host</label>
-                       <select class="form-control" id="filterHost" name="filterhost" placeholder="Host">
-                           {% for docker_host in docker_host_list %}
-                           <option value="{{ docker_host.id }}">{{ docker_host.name }}</option>
-                           {% endfor %}
-                        </select>
-               </div>
-           </form>
+    <h3>Docker Host</h3>
+    <div class="col-md-3 input-group">
+    <input id="filter_table_2" type="text" class="form-control" placeholder="Filtern nach...">
     </div>
     <table class='table table-striped'>
         <thead>
@@ -100,9 +86,13 @@
             </td>
         </tr>
         </thead>
-        <tbody>
+        <tbody class='filter_table_2'>
         {% for host_status in host_statushistory %}
+        {% if host_status.status_before == 'online' and host_status.status_after == 'offline' %}
+        <tr class='warntr'>
+        {% else %}
         <tr>
+        {% endif %}
             <td>
                 {{ host_status.id }}
             </td>
