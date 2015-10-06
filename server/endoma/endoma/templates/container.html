@@ -4,40 +4,111 @@
 {% include '_header.html' %}
 {% include '_navleft.html' %}
 <div class='col-md-9'>
+        {% if docker_host_list %}
         <div class='row' style='margin-bottom:20px'>
 		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Add Container</a>
 		 <div id="element-host-add" class="collapse">
 					<div class='panel-body'>
-    	                   <form class='form-inline' role="form" action="/dashboard/container/" method="post">{% csrf_token %}
+    	                   <form class='form-horizontal' role="form" action="/dashboard/container/" method="post">{% csrf_token %}
+                               <div class='col-md-8'>
                                <div class="form-group">
-                                   <label class="sr-only" for="inputName">Name</label>
+                                   <div class='col-md-2'>
+                                   <label for="inputName">Name</label>
+                               </div>
+                                   <div class='col-md-4'>
                                    <input type="text" class="form-control" id="inputName" name="containername" placeholder="Name">
                                </div>
-                               <div class="form-group">
-                                   <label class="sr-only" for="inputDescription">Beschreibung</label>
+                                   <div class='col-md-2'>
+                                   <label for="inputDescription">Beschreibung</label>
+                               </div>
+                                   <div class='col-md-4'>
                                    <input type="text" class="form-control" id="inputDescription" name="containerdescription" placeholder="Beschreibung">
+                                </div>
                                </div>
                                <div class="form-group">
-                                   <label class="sr-only" for="inputImage">Image</label>
+                                   <div class='col-md-2'>
+                                   <label for="inputImage">Image</label>
+                               </div>
+                                   <div class='col-md-4'>
                                    <input type="text" class="form-control" id="inputImage" name="containerimage" placeholder="Image">
                                </div>
-                               <div class="form-group">
-                                   <label class="sr-only" for="inputPort">Port</label>
+                                   <div class='col-md-2'>
+                                   <label  for="inputPort">Port</label>
+                               </div>
+                                   <div class='col-md-4'>
                                    <input type="text" class="form-control" id="inputPort" name="containerport" placeholder="Port">
                                </div>
+                               </div>
                                <div class="form-group">
-                                   <label class="sr-only" for="inputHost">Host</label>
-                                   <select class="form-control" id="InputHost" name="containerhost" placeholder="Host">
+                                   <div class='col-md-2'>
+                                   <label for="inputHost">Host</label>
+                               </div>
+                                   <div class='col-md-4'>
+                                   <select class="form-control" id="inputHost" name="containerhost">
+                                       <option selected disabled>Chose a Host...</option>
                                        {% for docker_host in docker_host_list %}
                                        <option value="{{ docker_host.id }}">{{ docker_host.name }}</option>
                                        {% endfor %}
                                    </select>
                                </div>
+                               </div>
+                               <div  class='form-group'>
+                                   <div class='col-md-2'>
+                                       <label for='InputLink'>Links</label>
+                                   </div>
+                                   <div class='col-md-4'>
+                                       {% for docker_host in docker_host_list %}
+                                       <p class='hidden' id='availableContainers_{{docker_host.id}}'>
+                                           {% for docker_container in docker_container_list %}
+                                           {% if docker_host == docker_container.docker_host %}
+                                           <option value='{{ docker_container.id }}'>{{ docker_container.name }}</option>
+                                           {% endif %}
+                                           {% endfor %}
+                                       </p>
+                                       {% endfor %}
+                                   <select class="form-control" id="inputLink">
+                                       <option selected disabled>Chose a Container...</option>
+                                   </select>
+                               </div>
+                                   <div class='col-md-1'>
+                                   <button type='button' class='btn btn-default btn-info' id='addLink'><i class='glyphicon glyphicon-plus'></i></button>
+                                   </div>
+                               </div>
+                               <div  class='form-group'>
+                                   <div class='col-md-3'>
+                                       <label for='inputVariable'>Environment Variables</label>
+                                   </div>
+                                   <div class='col-md-8'>
+                                   <div class='col-md-6'>
+                                       <input type='text' class='form-control' id='inputKey' placeholder='Key'></input>
+                                   </div>
+                                   <div class='col-md-6'>
+                                       <input type='text' class='form-control' id='inputValue' placeholder='Value'></input>
+                                   </div>
+                                   </div>
+                                   <div class='col-md-1'>
+                                   <button type='button' class='btn btn-default btn-info' id='addVariable'><i class='glyphicon glyphicon-plus'></i></button>
+                               </div>
+                               </div>
+                               <div class='col-md-6'>
+                                   <input class='hidden' type='text' id='chosenLinks' name='containerlinks'></input>
+                                   <label>Added Links</label>
+                                   <div id='chosenLinksList'>
+                                   </div>
+                               </div>
+                               <div class='col-md-6'>
+                                   <input class='hidden' type='text' id='chosenVariables' name='containervars'></input>
+                                   <label>Added Environment Variables</label>
+                                   <div id='chosenVariablesList'>
+                                   </div>
+                               </div>
+                           </div>
                                <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
                            </form>
                     </div>
 				</div>
             </div>
+            {% endif %}
 
     <div class="col-md-3 input-group">
     <input id="filter_row" type="text" class="form-control" placeholder="Filtern nach...">
@@ -45,7 +116,7 @@
     <div class='filter_row tb'>
 {% for docker_container in docker_container_list %}
     <div class='row well'>
-            <div class='col-md-2'>
+            <div class='col-md-1'>
                 {% if docker_container.status == 'Running' %}
                 <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
                 {% elif docker_container.status == 'Stopped' %}
@@ -56,9 +127,12 @@
             </div>
             <div class='col-md-3'>
                 {{ docker_container.name }}
+                {% if docker_container.to_delete %}
+                <p class='deleteflag'>Zur Entfernung markiert<p>
+                {% endif %}
             </div>
-            <div class='col-md-3'>
-                Last update: {{ docker_container.last_update }}
+            <div class='col-md-4'>
+                Letzte Aktualisierung: {{ docker_container.last_update }}
             </div>
             <div class='col-md-3'>
                 Status: {{ docker_container.status }}

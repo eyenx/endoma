@@ -7,7 +7,7 @@ import time
 
 api_url='http://localhost:8080/api/'
 timeout=60
-api_key='0hH1WdHIiOUSaOvh13GZ2GVrz74ZFGS6'
+api_key='j1trC63tFv8GXUD9nkLec67dBStXowxa'
 docker_client=docker.Client(base_url='unix://var/run/docker.sock')
 
 while True:
@@ -18,6 +18,7 @@ while True:
     try:
         print('connecting to '+api_url)
         response=requests.post(api_url+'poll/',data=json.dumps(data),headers=headers,timeout=timeout)
+        print(response.text)
         response_json=json.loads(response.text)
         task_id=response_json['data']['task_id']
         print('received Task ID: '+str(task_id))

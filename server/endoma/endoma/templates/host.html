@@ -28,8 +28,8 @@
     <div class='filter_row tb'>
     {% for docker_host in docker_host_list %}
     <div class='row well'>
-            <div class='col-md-2'>
-                {% if docker_host.status == 'online' %}
+            <div class='col-md-1'>
+                {% if docker_host.status == 'Online' %}
                 <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
                 {% else %}
                 <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
@@ -37,9 +37,12 @@
             </div>
             <div class='col-md-3'>
                 {{ docker_host.name }}
+                {% if docker_host.to_delete %}
+                <p class='deleteflag'>Zur Entfernung markiert<p>
+                {% endif %}
             </div>
-            <div class='col-md-3'>
-                Last update: {{ docker_host.last_update }}
+            <div class='col-md-4'>
+                Letzte Aktualisierung: {{ docker_host.last_update }}
             </div>
             <div class='col-md-3'>
                 Status: {{ docker_host.status }}

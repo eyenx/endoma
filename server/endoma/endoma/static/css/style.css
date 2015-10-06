@@ -46,9 +46,16 @@ div.header{
 .buttonglyphicon{
     font-size:28px;
 }
+.deleteflag{
+    color:#D9534F;
+    font-weight:bold;
+}
 .container-margin{
     margin-left:10px;
     margin-right:10px;
+}
+.hidden{
+    display:none
 }
 div.tb{
     margin-top:20px;

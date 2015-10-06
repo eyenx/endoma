@@ -16,7 +16,7 @@ class DockerContainer(models.Model):
     name=models.CharField(max_length=256)
     description=models.CharField(max_length=256,null=True)
     image=models.CharField(max_length=256)
-    ports=models.CharField(max_length=256,null=True)
+    port=models.CharField(max_length=256,null=True)
     container_id=models.CharField(max_length=256,null=True)
     last_update=models.DateTimeField(auto_now=True)
     status=models.CharField(max_length=256)
@@ -45,4 +45,13 @@ class Task(models.Model):
     update_timestamp=models.DateTimeField(auto_now=True)
     status=models.CharField(max_length=256)
     task_template=models.ForeignKey(TaskTemplate)
+    docker_container=models.ForeignKey(DockerContainer)
+
+class Link(models.Model):
+    source=models.ForeignKey(DockerContainer,related_name='source')
+    destination=models.ForeignKey(DockerContainer,related_name='destination')
+
+class EnvironmentVariable(models.Model):
+    key=models.CharField(max_length=256)
+    value=models.CharField(max_length=256)
     docker_container=models.ForeignKey(DockerContainer)

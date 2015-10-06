@@ -30,6 +30,9 @@ class SimpleViewController(View):
     template_name='index.html'
     # HTTP GET
     def get(self,request):
+        # if index.html and authenticated redirect
+        if self.template_name=='index.html' and request.user.is_authenticated():
+            return HttpResponseRedirect('/dashboard')
         # render template
         return render(request,self.template_name)
 """
@@ -50,6 +53,9 @@ class LoginController(View):
         if self.method=='logout':
             logout(request)
             return HttpResponseRedirect('/login')
+        # if already logged in -> redirect
+        if request.user.is_authenticated():
+            return HttpResponseRedirect('/dashboard')
         # if login method show login view
         return render(request,self.template_name)
     # HTTP POST (only for /login)
@@ -79,44 +85,60 @@ URLs:
 """
 class HostController(View):
     template_name='host.html'
+    context={'host_active':'active','dashboard_active':'active'}
+    # HTTP GET
     def get(self,request,*args, **kwargs):
         # If host_id was given, return detail_host.html
         # example: dashboard/host/7/
         if 'host_id' in kwargs.keys():
             self.template_name='detail_host.html'
             docker_host=DockerHost.objects.get(id=kwargs['host_id'])
-            self.check_if_offline(docker_host)
-            return render(request,self.template_name,{'host_active':'active','dashboard_active':'active','docker_host':docker_host})
+            self.context['docker_host']=docker_host
+            return render(request,self.template_name,self.context)
         # else return list of hosts
         # example: dashboard/host/
-        docker_host_list=DockerHost.objects.filter(user=request.user)
-        for docker_host in docker_host_list:
-            self.check_if_offline(docker_host)
-        return render(request, self.template_name,{'docker_host_list':docker_host_list,'host_active':'active','dashboard_active':'active'})
-#    else:
-#        docker_host=DockerHost.objects.all()
-#        return render(request, 'host_detail.html',{'docker_host':docker_host})
+        for docker_host in DockerHost.objects.filter(user=request.user):
+            # check if docker_host is to delete
+            if docker_host.to_delete:
+                self.check_if_to_remove(docker_host)
+        self.context['docker_host_list']=DockerHost.objects.filter(user=request.user)
+        return render(request, self.template_name,self.context)
+    # HTTP POST
     def post(self,request,*args,**kwargs):
-        docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key='',status='offline')
+        docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key='',status='Offline')
         # generate 128 character API Key
         for _ in range(32):
             docker_host.api_key+=random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits)
         docker_host.save()
         return HttpResponseRedirect('/dashboard/host')
-    def check_if_offline(self,docker_host):
-        # update status if host is offline
-        # this is done here to not have a scheduled job do it everytime
-        # if status was longer than 15 minutes ago, update status
-        # 15 minutes = 900 seconds
-        now=timezone.now()
-        if (now - docker_host.last_update).seconds > 900:
-            self.update_status(docker_host,'offline')
+    # HTTP DELETE
+    def delete(self,request,*args,**kwargs):
+        if 'host_id' in kwargs.keys():
+            # get Host
+            docker_host=DockerHost.objects.get(id=kwargs['host_id'])
+            # delete host
+            self.remove(docker_host)
+            # delete all docker_containers first
+            return HttpResponse()
+        return HttpResponseForbidden()
     """
     Custom Methods of HostController
     """
+    # check if host should be deleted
+    def check_if_to_remove(self,docker_host):
+        # if no dockercontainers left
+        if not DockerContainer.objects.filter(docker_host=docker_host):
+            docker_host.delete()
+    # remove host
+    def remove(self,docker_host):
+        # first mark all container for deletion
+        for docker_container in DockerContainer.objects.filter(docker_host=docker_host):
+            ContainerController().remove(docker_container)
+        docker_host.to_delete=True
+        docker_host.save()
     # get all docker_hosts of a given user
     def get_all(self,user):
-        return DockerHost.objects.filter(user=user)
+        return DockerHost.objects.filter(user=user).order_by('id')
     # update the status of a given docker_host
     def update_status(self,docker_host,status):
         # if the status given differs, create a new statushistory record
@@ -159,6 +181,8 @@ class ContainerController(View):
         if 'container_id' in kwargs.keys():
             self.template_name='detail_container.html'
             self.context['docker_container']=DockerContainer.objects.get(id=kwargs['container_id'])
+            self.context['environment_variables']=EnvironmentVariable.objects.filter(docker_container=self.context['docker_container'])
+            self.context['links']=Link.objects.filter(source=self.context['docker_container'])
             return render(request,self.template_name,self.context)
         # else return list of docker containers
         self.context['docker_host_list']=HostController().get_all(request.user)
@@ -169,9 +193,28 @@ class ContainerController(View):
         # get given DockerHost
         docker_host=DockerHost.objects.get(id=request.POST['containerhost'])
         # create new docker_container
-        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],ports=request.POST['containerport'],docker_host=docker_host,container_id='',status='')
+        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],port=request.POST['containerport'],docker_host=docker_host,container_id='',status='')
         # save it to the database
         docker_container.save()
+        # create links
+        if request.POST['containerlinks']:
+            link_list=request.POST['containerlinks'].split(',')
+            link_list.pop()
+            for link_id in link_list:
+                destination_container=DockerContainer.objects.get(id=link_id)
+                if not Link.objects.filter(source=docker_container,destination=destination_container):
+                    link=Link(source=docker_container,destination=destination_container)
+                    link.save()
+        # create environment variables
+        if request.POST['containervars']:
+            var_list=request.POST['containervars'].split(',')
+            var_list.pop()
+            for var in var_list:
+                key=var.split(':')[0]
+                value=var.split(':')[1]
+                if not EnvironmentVariable.objects.filter(key=key,docker_container=docker_container):
+                    environment_variable=EnvironmentVariable(key=key,value=value,docker_container=docker_container)
+                    environment_variable.save()
         # now create the tasks
         # first pull the image
         task_template=TaskTemplate.objects.get(name='pull')
@@ -184,8 +227,10 @@ class ContainerController(View):
         # redirect to the container view
         return HttpResponseRedirect('/dashboard/container')
     # HTTP DELETE (used for deletion of containers)
-    # TODO
     def delete(self,request,*args,**kwargs):
+        if 'container_id' in kwargs.keys():
+            self.remove(DockerContainer.objects.get(id=kwargs['container_id']))
+            return HttpResponseRedirect('/dashboard/container')
         return HttpResponseForbidden()
     # HTTP PUT
     # used for start and stop
@@ -204,6 +249,22 @@ class ContainerController(View):
     """
     custom methods of ContainerController
     """
+    # remove container
+    def remove(self,docker_container):
+        # first check if container has no containerid
+        if not docker_container.container_id:
+            # delete it right away
+            docker_container.delete()
+            return
+        # mark Container for deletion and create task for deletion on host
+        docker_container.to_delete=True
+        docker_container.save()
+        # first stop
+        task_stop=Task(task_template=TaskTemplate.objects.get(name='stop'),docker_container=docker_container,status='Ready')
+        task_stop.save()
+        # afterwards delete
+        task_delete=Task(task_template=TaskTemplate.objects.get(name='delete'),docker_container=docker_container,status='Ready')
+        task_delete.save()
     # Get all containers of given user
     def get_all(self,user):
         # return all DockerContainer which are related to the list of DockerHost owned by the user
@@ -287,13 +348,15 @@ class ApiController(View):
         except(ValueError,KeyError):
             return HttpResponseForbidden()
         if docker_host and 'data' in json_request.keys():
-            HostController().update_status(docker_host,'online')
+            HostController().update_status(docker_host,'Online')
             # if the requests is on /api/poll
             if request.path=='/api/poll/':
                 # get version of docker and update if needed
                 HostController().check_docker_version(docker_host,json_request['data']['info']['Version'])
                 # update containers data
                 self.update_containers(json_request['data']['containers'])
+                # check for removed containers
+                self.check_for_removed_containers(docker_host,json_request['data']['containers'])
                 # get next Task
                 task=TaskController().get_next_task(docker_host)
                 # as long as there is no task ready and the timeout of 60 seconds isn't reached
@@ -310,6 +373,9 @@ class ApiController(View):
                 # if there is a task, return it to the agent
                 # but first replace the tags
                 command=task.task_template.command.replace('@@IMAGE@@','"'+task.docker_container.image+':latest"')
+                command=command.replace('@@HOST_CONFIG@@',self.create_host_config(task.docker_container))
+                command=command.replace('@@PORT@@',task.docker_container.port)
+                command=command.replace('@@ENVIRONMENT@@',self.create_environment_variables_list(task.docker_container))
                 command=command.replace('@@CONTAINERID@@','"'+task.docker_container.container_id+'"')
                 task.status='Sent'
                 task.save()
@@ -330,6 +396,36 @@ class ApiController(View):
     """
     Custom methods of APIController
     """
+    # create environment variables list
+    def create_environment_variables_list(self,docker_container):
+        return_string="{"
+        environment_variables=EnvironmentVariable.objects.filter(docker_container=docker_container)
+        for var in environment_variables:
+            return_string+='"'+var.key+'":"'+var.value+'",'
+        return_string+="}"
+        return return_string
+
+
+    # create host_config for Task
+    def create_host_config(self,docker_container):
+        return_string=""
+        if docker_container.port:
+            return_string+="port_bindings={"+docker_container.port+":"+docker_container.port+"},"
+        # get Links for this docker container
+        links=Link.objects.filter(source=docker_container)
+        if links:
+            return_string+='links={'
+            for link in links:
+                return_string+='"'+link.destination.container_id+'":"'+link.destination.name.replace(' ','_')+'",'
+            return_string+='}'
+        return return_string
+    def check_for_removed_containers(self,docker_host,data):
+        container_ids=list()
+        for container in data:
+            container_ids.append(container['Id'])
+        for docker_container in DockerContainer.objects.filter(docker_host=docker_host,to_delete=True):
+            if docker_container.container_id not in container_ids:
+                docker_container.delete()
     def update_containers(self,data):
         # for every given docker container
         for container in data:
@@ -368,6 +464,9 @@ class ApiController(View):
                 except(ValueError,KeyError):
                     pass
             elif task_type == 'start' or task_type == 'stop':
+                if data==None:
+                    task.status='Success'
+            elif task_type == 'delete':
                 if data==None:
                     task.status='Success'
         # save it

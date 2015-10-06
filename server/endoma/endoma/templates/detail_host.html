@@ -6,7 +6,7 @@
 <div class='col-md-6 well'>
     <div class='row'>
         <div class='col-md-2'>
-            {% if docker_host.status == 'online' %}
+            {% if docker_host.status == 'Online' %}
             <i class='glyphicon glyphicon-ok-sign statusglyphicon okayglyphicon'></i>
             {% else %}
             <i class='glyphicon glyphicon-exclamation-sign statusglyphicon alertglyphicon'></i>
@@ -14,6 +14,9 @@
         </div>
         <div class='col-md-10 h3'>
             {{ docker_host.name }}
+            {% if docker_host.to_delete %}
+            <p class='deleteflag'>Zur Entfernung markiert<p>
+            {% endif %}
         </div>
     </div>
     <div class='row tb'>
@@ -42,7 +45,7 @@
     </div>
     <div class='row tb'>
         <div class='col-md-4'>
-            Last update
+            Letzte Aktualisierung
         </div>
         <div class='col-md-8'>
             {{ docker_host.last_update }}
