@@ -5,9 +5,9 @@ import json
 import requests
 import time
 
-api_url='http://localhost:8080/api/'
+api_url='http://localhost:8000/api/'
 timeout=60
-api_key='j1trC63tFv8GXUD9nkLec67dBStXowxa'
+api_key='1PCIfuo90ufubfQVPXt4MyLloHXOGaBb'
 docker_client=docker.Client(base_url='unix://var/run/docker.sock')
 
 while True:

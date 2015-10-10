@@ -14,5 +14,5 @@ class Command(BaseCommand):
             tt3.save()
             tt4=TaskTemplate(name='pull',description='pull an image',command='pull(@@IMAGE@@)')
             tt4.save()
-            tt5=TaskTemplate(name='create',description='create a container',command='create_container(image=@@IMAGE@@,ports=[@@PORT@@],host_config=docker.utils.create_host_config(@@HOST_CONFIG@@))')
+            tt5=TaskTemplate(name='create',description='create a container',command='create_container(image=@@IMAGE@@,environment=@@ENVIRONMENT@@,ports=[@@PORT@@],host_config=docker.utils.create_host_config(@@HOST_CONFIG@@))')
             tt5.save()

@@ -6,8 +6,8 @@
 <div class='col-md-9'>
         {% if docker_host_list %}
         <div class='row' style='margin-bottom:20px'>
-		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Add Container</a>
-		 <div id="element-host-add" class="collapse">
+		 <a  data-toggle="collapse" href="#element-container-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Container hinzufügen</a>
+		 <div id="element-container-add" class="collapse">
 					<div class='panel-body'>
     	                   <form class='form-horizontal' role="form" action="/dashboard/container/" method="post">{% csrf_token %}
                                <div class='col-md-8'>
@@ -16,7 +16,7 @@
                                    <label for="inputName">Name</label>
                                </div>
                                    <div class='col-md-4'>
-                                   <input type="text" class="form-control" id="inputName" name="containername" placeholder="Name">
+                                   <input data-validation='required' type="text" class="form-control" id="inputName" name="containername" placeholder="Name">
                                </div>
                                    <div class='col-md-2'>
                                    <label for="inputDescription">Beschreibung</label>
@@ -30,13 +30,13 @@
                                    <label for="inputImage">Image</label>
                                </div>
                                    <div class='col-md-4'>
-                                   <input type="text" class="form-control" id="inputImage" name="containerimage" placeholder="Image">
+                                   <input data-validation='required' type="text" class="form-control" id="inputImage" name="containerimage" placeholder="Image">
                                </div>
                                    <div class='col-md-2'>
-                                   <label  for="inputPort">Port</label>
+                                   <label for="inputPort">Port</label>
                                </div>
                                    <div class='col-md-4'>
-                                   <input type="text" class="form-control" id="inputPort" name="containerport" placeholder="Port">
+                                   <input data-validation='custom' data-validation-regexp='^[0-9]*$' data-validation-error-msg='Bitte geben Sie eine Zahl ein' type="text" class="form-control" id="inputPort" name="containerport" placeholder="Port">
                                </div>
                                </div>
                                <div class="form-group">
@@ -44,7 +44,7 @@
                                    <label for="inputHost">Host</label>
                                </div>
                                    <div class='col-md-4'>
-                                   <select class="form-control" id="inputHost" name="containerhost">
+                                   <select data-validation='required' class="form-control" id="inputHost" name="containerhost">
                                        <option selected disabled>Chose a Host...</option>
                                        {% for docker_host in docker_host_list %}
                                        <option value="{{ docker_host.id }}">{{ docker_host.name }}</option>
@@ -88,7 +88,7 @@
                                    </div>
                                    <div class='col-md-1'>
                                    <button type='button' class='btn btn-default btn-info' id='addVariable'><i class='glyphicon glyphicon-plus'></i></button>
-                               </div>
+                                   </div>
                                </div>
                                <div class='col-md-6'>
                                    <input class='hidden' type='text' id='chosenLinks' name='containerlinks'></input>
@@ -103,8 +103,21 @@
                                    </div>
                                </div>
                            </div>
-                               <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
+                           <div class='tb col-md-12'>
+                               <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"> Hinzufügen</i></button>
+                           </div>
                            </form>
+                           <script>
+                           var myLang={
+                               errorTitle:'Formvalidierung fehlgeschlagen',
+                               requiredFields:'Nicht alle erforderlichen Felder wurden ausgefühllt',
+                           };
+
+                           $.validate({
+                               language:myLang,
+                               errorMessagePosition:'top',
+                               validateOnBlur:false
+                           });</script>
                     </div>
 				</div>
             </div>

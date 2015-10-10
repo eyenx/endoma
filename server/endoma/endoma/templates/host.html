@@ -5,13 +5,13 @@
 {% include '_navleft.html' %}
 <div class='col-md-9'>
     <div class='row' style='margin-bottom:20px'>
-		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Add Host</a>
+		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Host hinzufügen</a>
 		 <div id="element-host-add" class="collapse">
 					<div class='panel-body'>
     	                   <form class='form-inline' role="form" action="/dashboard/host/" method="post">{% csrf_token %}
                                <div class="form-group">
                                    <label class="sr-only" for="inputName">Name</label>
-                                   <input type="text" class="form-control" id="inputName" name="hostname" placeholder="Name">
+                                   <input data-validation='required' type="text" class="form-control" id="inputName" name="hostname" placeholder="Name">
                                </div>
                                <div class="form-group">
                                    <label class="sr-only" for="inputDescription">Beschreibung</label>
@@ -19,6 +19,17 @@
                                </div>
                                <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
                            </form>
+                           <script>
+                           var myLang={
+                               errorTitle:'Formvalidierung fehlgeschlagen',
+                               requiredFields:'Nicht alle erforderlichen Felder wurden ausgefühllt'
+                           };
+
+                           $.validate({
+                               language:myLang,
+                               errorMessagePosition:'top',
+                               validateOnBlur:false
+                           });</script>
                     </div>
 				</div>
             </div>

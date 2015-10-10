@@ -93,6 +93,9 @@ class HostController(View):
         if 'host_id' in kwargs.keys():
             self.template_name='detail_host.html'
             docker_host=DockerHost.objects.get(id=kwargs['host_id'])
+            # check for ownership
+            if docker_host.user!=request.user:
+                return HttpResponseForbidden()
             self.context['docker_host']=docker_host
             return render(request,self.template_name,self.context)
         # else return list of hosts
@@ -116,6 +119,11 @@ class HostController(View):
         if 'host_id' in kwargs.keys():
             # get Host
             docker_host=DockerHost.objects.get(id=kwargs['host_id'])
+            if docker_host.user!=request.user:
+                return HttpResponseForbidden()
+            # check for ownership
+            if docker_host.user!=request.user:
+                return HttpResponseForbidden()
             # delete host
             self.remove(docker_host)
             # delete all docker_containers first
@@ -183,6 +191,9 @@ class ContainerController(View):
             self.context['docker_container']=DockerContainer.objects.get(id=kwargs['container_id'])
             self.context['environment_variables']=EnvironmentVariable.objects.filter(docker_container=self.context['docker_container'])
             self.context['links']=Link.objects.filter(source=self.context['docker_container'])
+            # check for ownership
+            if self.context['docker_container'].docker_host.user!=request.user:
+                return HttpResponseForbidden()
             return render(request,self.template_name,self.context)
         # else return list of docker containers
         self.context['docker_host_list']=HostController().get_all(request.user)
@@ -192,6 +203,9 @@ class ContainerController(View):
     def post(self,request):
         # get given DockerHost
         docker_host=DockerHost.objects.get(id=request.POST['containerhost'])
+        # check for ownership
+        if docker_host.user!=request.user:
+            return HttpResponseForbidden()
         # create new docker_container
         docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],port=request.POST['containerport'],docker_host=docker_host,container_id='',status='')
         # save it to the database
@@ -229,7 +243,11 @@ class ContainerController(View):
     # HTTP DELETE (used for deletion of containers)
     def delete(self,request,*args,**kwargs):
         if 'container_id' in kwargs.keys():
-            self.remove(DockerContainer.objects.get(id=kwargs['container_id']))
+            docker_container=DockerContainer.objects.get(id=kwargs['container_id'])
+            # check for ownership
+            if docker_container.docker_host.user!=request.user:
+                return HttpResponseForbidden()
+            self.remove(docker_container)
             return HttpResponseRedirect('/dashboard/container')
         return HttpResponseForbidden()
     # HTTP PUT
@@ -239,8 +257,12 @@ class ContainerController(View):
             try:
                 request_json=json.loads(request.body.decode('utf-8'))
                 if 'action' in request_json.keys():
+                    docker_container=DockerContainer.objects.get(id=kwargs['container_id'])
+                    # check for ownership
+                    if docker_container.docker_host.user!=request.user:
+                        return HttpResponseForbidden()
                     # create task with given action (start or stop)
-                    task=Task(task_template=TaskTemplate.objects.get(name=request_json['action']),docker_container=DockerContainer.objects.get(id=kwargs['container_id']),status='Ready')
+                    task=Task(task_template=TaskTemplate.objects.get(name=request_json['action']),docker_container=docker_container,status='Ready')
                     task.save()
                     return HttpResponse()
             except(KeyError,ValueError):

@@ -82,7 +82,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'endoma_db',
         'USER': 'endoma',
-        'PASSWORD': 'endoma_pw',
+        'PASSWORD': os.environ['DB_PASSWORD'],
         'HOST': os.environ['ENDOMA_DB_PORT_5432_TCP_ADDR'],
         'PORT': os.environ['ENDOMA_DB_PORT_5432_TCP_PORT'],
     }
