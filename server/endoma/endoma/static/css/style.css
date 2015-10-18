@@ -5,6 +5,12 @@ body{
     text-align:center;
 }
 
+img.help{
+    max-width:70%;
+    max-height:300px;
+    margin-top:20px;
+    margin-bottom:20px;
+}
 a.center{
     display:block;
     margin-left:auto;

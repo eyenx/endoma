@@ -4,8 +4,8 @@
 {% include '_header.html' %}
 {% include '_navleft.html' %}
 <div class='col-md-9'>
-    <div class="col-md-3 input-group">
-    <input id="filter_table" type="text" class="form-control" placeholder="Filtern nach...">
+    <div class='col-md-3 input-group'>
+    <input id='filter_table' type='text' class='form-control' placeholder='Filtern nach...'>
     </div>
     <table class='table table-striped'>
         <thead>
@@ -35,11 +35,7 @@
         </thead>
         <tbody class='filter_table'>
         {% for task in task_list %}
-        {% if task.status == 'Failed' %}
-        <tr class='warntr'>
-        {% else %}
         <tr>
-        {% endif %}
             <td>
                 {{ task.id }}
             </td>

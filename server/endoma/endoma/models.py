@@ -1,7 +1,15 @@
+"""
+File: models.py
+Comment: Definition of custom Models
+Project: EnDoMa
+Author: Antonio Tauro
+"""
+# module imports
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+# Custom Models for Application
+
 class DockerHost(models.Model):
     name=models.CharField(max_length=256)
     description=models.CharField(max_length=256,null=True)

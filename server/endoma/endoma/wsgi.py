@@ -1,10 +1,9 @@
 """
-WSGI config for endoma project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
+File: wsgi.py
+Comment: Definition of wsgi for this application
+         (left to default)
+Project: EnDoMa
+Author: Antonio Tauro
 """
 
 import os

@@ -5,19 +5,19 @@
 {% include '_navleft.html' %}
 <div class='col-md-9'>
     <div class='row' style='margin-bottom:20px'>
-		 <a  data-toggle="collapse" href="#element-host-add"><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Host hinzufügen</a>
-		 <div id="element-host-add" class="collapse">
+		 <a  data-toggle='collapse' href='#element-host-add'><i class='glyphicon glyphicon-plus' style='font-size:20px'></i> Host hinzufügen</a>
+		 <div id='element-host-add' class='collapse'>
 					<div class='panel-body'>
-    	                   <form class='form-inline' role="form" action="/dashboard/host/" method="post">{% csrf_token %}
-                               <div class="form-group">
-                                   <label class="sr-only" for="inputName">Name</label>
-                                   <input data-validation='required' type="text" class="form-control" id="inputName" name="hostname" placeholder="Name">
+    	                   <form class='form-inline' role='form' action='/dashboard/host/' method='post'>{% csrf_token %}
+                               <div class='form-group'>
+                                   <label class='sr-only' for='inputName'>Name</label>
+                                   <input data-validation='required' type='text' class='form-control' id='inputName' name='hostname' placeholder='Name'>
                                </div>
-                               <div class="form-group">
-                                   <label class="sr-only" for="inputDescription">Beschreibung</label>
-                                   <input type="text" class="form-control" id="inputDescription" name="hostdescription" placeholder="Beschreibung">
+                               <div class='form-group'>
+                                   <label class='sr-only' for='inputDescription'>Beschreibung</label>
+                                   <input type='text' class='form-control' id='inputDescription' name='hostdescription' placeholder='Beschreibung'>
                                </div>
-                               <button type="submit" class="btn btn-default btn-success"><i class="glyphicon glyphicon-plus"></i></button>
+                               <button type='submit' class='btn btn-default btn-success'><i class='glyphicon glyphicon-plus'></i></button>
                            </form>
                            <script>
                            var myLang={
@@ -33,8 +33,8 @@
                     </div>
 				</div>
             </div>
-    <div class="col-md-3 input-group">
-    <input id="filter_row" type="text" class="form-control" placeholder="Filtern nach...">
+    <div class='col-md-3 input-group'>
+    <input id='filter_row' type='text' class='form-control' placeholder='Filtern nach...'>
     </div>
     <div class='filter_row tb'>
     {% for docker_host in docker_host_list %}

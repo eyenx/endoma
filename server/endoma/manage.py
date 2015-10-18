@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""
+File: manage.py
+Comment: Manage script of django, needed to run the server
+         (left to default)
+Project: EnDoMa
+Author: Antonio Tauro
+"""
+# module imports
 import os
 import sys
 

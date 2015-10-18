@@ -6,8 +6,8 @@
 <div class='col-md-9'>
     <div class='row'>
         <h3>Docker Container</h3>
-    <div class="col-md-3 input-group">
-    <input id="filter_table" type="text" class="form-control" placeholder="Filtern nach...">
+    <div class='col-md-3 input-group'>
+    <input id='filter_table' type='text' class='form-control' placeholder='Filtern nach...'>
     </div>
     <table class='table table-striped'>
         <thead>
@@ -34,11 +34,7 @@
         </thead>
         <tbody class='filter_table'>
         {% for container_status in container_statushistory %}
-        {% if container_status.status_before == 'Running' and container_status.status_after != 'Running' %}
-        <tr class='warntr'>
-        {% else %}
         <tr>
-        {% endif %}
             <td>
                 {{ container_status.id }}
             </td>
@@ -63,8 +59,8 @@
     </table>
     <div class='row'>
     <h3>Docker Host</h3>
-    <div class="col-md-3 input-group">
-    <input id="filter_table_2" type="text" class="form-control" placeholder="Filtern nach...">
+    <div class='col-md-3 input-group'>
+    <input id='filter_table_2' type='text' class='form-control' placeholder='Filtern nach...'>
     </div>
     <table class='table table-striped'>
         <thead>
@@ -88,11 +84,7 @@
         </thead>
         <tbody class='filter_table_2'>
         {% for host_status in host_statushistory %}
-        {% if host_status.status_before == 'online' and host_status.status_after == 'offline' %}
-        <tr class='warntr'>
-        {% else %}
         <tr>
-        {% endif %}
             <td>
                 {{ host_status.id }}
             </td>

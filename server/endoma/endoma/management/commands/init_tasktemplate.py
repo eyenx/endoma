@@ -1,10 +1,20 @@
+"""
+File: init_tasktemplate.py
+Comment: Custom administration command for initialize database with task templates
+Project: EnDoMa
+Author: Antonio Tauro
+"""
+# module imports
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from endoma.models import TaskTemplate
-
+"""
+Custom administration command for django
+"""
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # load database with TaskTemplates
+        # load database with the five neede TaskTemplates
+        # only do this if TaskTemplate table is empty
         if TaskTemplate.objects.count() == 0:
             tt1=TaskTemplate(name='delete',description='delete a container',command='remove_container(@@CONTAINERID@@)')
             tt1.save()

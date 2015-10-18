@@ -1,12 +1,19 @@
 """
+File: urls.py
+Comment: Definition of URL Patterns in the Application
+Project: EnDoMa
+Author: Antonio Tauro
 """
+# module imports
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 # csrf_exempt for APIController
 from django.views.decorators.csrf import csrf_exempt
+# import my views
 from . import views
 
+# URLS Pattern for every possible path in the app
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.SimpleViewController.as_view(), name='index'),

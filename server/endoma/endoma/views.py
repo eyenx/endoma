@@ -1,3 +1,10 @@
+"""
+File: views.py
+Comment: Definition of all Viewcontrollers
+Project: EnDoMa
+Author: Antonio Tauro
+"""
+# module imports
 from django.shortcuts import render
 from django.contrib.auth import authenticate,login,logout
 from django.views.generic import View
@@ -28,6 +35,7 @@ URLs:
 class SimpleViewController(View):
     # Default template
     template_name='index.html'
+
     # HTTP GET
     def get(self,request):
         # if index.html and authenticated redirect
@@ -47,6 +55,7 @@ class LoginController(View):
     template_name='login.html'
     # set method, login or logout. Default: login
     method='login'
+
     # HTTP GET
     def get(self,request):
         # if logout method
@@ -58,6 +67,7 @@ class LoginController(View):
             return HttpResponseRedirect('/dashboard')
         # if login method show login view
         return render(request,self.template_name)
+
     # HTTP POST (only for /login)
     def post(self,request):
         # if login method
@@ -84,8 +94,11 @@ URLs:
     /dashboard/host/<Host_ID>
 """
 class HostController(View):
+    # default template
     template_name='host.html'
+    # default context for views
     context={'host_active':'active','dashboard_active':'active'}
+
     # HTTP GET
     def get(self,request,*args, **kwargs):
         # If host_id was given, return detail_host.html
@@ -106,14 +119,17 @@ class HostController(View):
                 self.check_if_to_remove(docker_host)
         self.context['docker_host_list']=DockerHost.objects.filter(user=request.user)
         return render(request, self.template_name,self.context)
+
     # HTTP POST
     def post(self,request,*args,**kwargs):
+        # create new host
         docker_host=DockerHost(name=request.POST['hostname'],description=request.POST['hostdescription'],user=request.user,api_key='',status='Offline')
-        # generate 128 character API Key
+        # generate 128 character API Key and save it to the host
         for _ in range(32):
             docker_host.api_key+=random.choice(string.ascii_uppercase+string.ascii_lowercase+string.digits)
         docker_host.save()
         return HttpResponseRedirect('/dashboard/host')
+
     # HTTP DELETE
     def delete(self,request,*args,**kwargs):
         if 'host_id' in kwargs.keys():
@@ -126,27 +142,32 @@ class HostController(View):
                 return HttpResponseForbidden()
             # delete host
             self.remove(docker_host)
-            # delete all docker_containers first
             return HttpResponse()
         return HttpResponseForbidden()
+
     """
     Custom Methods of HostController
     """
+
     # check if host should be deleted
     def check_if_to_remove(self,docker_host):
         # if no dockercontainers left
         if not DockerContainer.objects.filter(docker_host=docker_host):
             docker_host.delete()
+
     # remove host
     def remove(self,docker_host):
         # first mark all container for deletion
         for docker_container in DockerContainer.objects.filter(docker_host=docker_host):
             ContainerController().remove(docker_container)
+        # afterwards mark the host itself
         docker_host.to_delete=True
         docker_host.save()
+
     # get all docker_hosts of a given user
     def get_all(self,user):
         return DockerHost.objects.filter(user=user).order_by('id')
+
     # update the status of a given docker_host
     def update_status(self,docker_host,status):
         # if the status given differs, create a new statushistory record
@@ -157,16 +178,17 @@ class HostController(View):
         docker_host.status=status
         # save changes
         docker_host.save()
-    # check if the given api exists
+
+    # check if the given api key exists
     def check_api_key(self,api_key):
-        # TODO
-        # catch DoesNotExist here
         docker_host=DockerHost.objects.filter(api_key=api_key).first()
         # if there is a host with that api_key, return it
         if docker_host:
             return docker_host
+
     # check docker version and update it if changed
     def check_docker_version(self,docker_host,version):
+        # if version differs, update it
         if version != docker_host.docker_version:
             docker_host.docker_version=version
             docker_host.save()
@@ -183,6 +205,7 @@ class ContainerController(View):
     template_name='container.html'
     # context used for views
     context={'container_active':'active','dashboard_active':'active'}
+
     # HTTP GET
     def get(self,request,*args,**kwargs):
         # if container_id is given, return detail view
@@ -199,6 +222,7 @@ class ContainerController(View):
         self.context['docker_host_list']=HostController().get_all(request.user)
         self.context['docker_container_list']=self.get_all(request.user)
         return render(request,self.template_name,self.context)
+
     # HTTP POST (New Container)
     def post(self,request):
         # get given DockerHost
@@ -207,13 +231,15 @@ class ContainerController(View):
         if docker_host.user!=request.user:
             return HttpResponseForbidden()
         # create new docker_container
-        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],port=request.POST['containerport'],docker_host=docker_host,container_id='',status='')
+        docker_container=DockerContainer(name=request.POST['containername'],description=request.POST['containerdescription'],image=request.POST['containerimage'],port=request.POST['containerport'],docker_host=docker_host,container_id='',status='Unknown')
         # save it to the database
         docker_container.save()
         # create links
         if request.POST['containerlinks']:
             link_list=request.POST['containerlinks'].split(',')
+            # remove last item (empty)
             link_list.pop()
+            # save those links to the container
             for link_id in link_list:
                 destination_container=DockerContainer.objects.get(id=link_id)
                 if not Link.objects.filter(source=docker_container,destination=destination_container):
@@ -222,7 +248,9 @@ class ContainerController(View):
         # create environment variables
         if request.POST['containervars']:
             var_list=request.POST['containervars'].split(',')
+            # remove last item (empty)
             var_list.pop()
+            # save these environment variables to the container
             for var in var_list:
                 key=var.split(':')[0]
                 value=var.split(':')[1]
@@ -240,21 +268,26 @@ class ContainerController(View):
         task.save()
         # redirect to the container view
         return HttpResponseRedirect('/dashboard/container')
+
     # HTTP DELETE (used for deletion of containers)
     def delete(self,request,*args,**kwargs):
         if 'container_id' in kwargs.keys():
+            # get container
             docker_container=DockerContainer.objects.get(id=kwargs['container_id'])
             # check for ownership
             if docker_container.docker_host.user!=request.user:
                 return HttpResponseForbidden()
+            # remove it
             self.remove(docker_container)
             return HttpResponseRedirect('/dashboard/container')
         return HttpResponseForbidden()
+
     # HTTP PUT
-    # used for start and stop
+    # used for start and stop actions
     def put(self,request,*args,**kwargs):
         if 'container_id' in kwargs.keys():
             try:
+                # load request body in json
                 request_json=json.loads(request.body.decode('utf-8'))
                 if 'action' in request_json.keys():
                     docker_container=DockerContainer.objects.get(id=kwargs['container_id'])
@@ -265,12 +298,16 @@ class ContainerController(View):
                     task=Task(task_template=TaskTemplate.objects.get(name=request_json['action']),docker_container=docker_container,status='Ready')
                     task.save()
                     return HttpResponse()
+            # if json was wrong
             except(KeyError,ValueError):
                 return HttpResponseForbidden()
+        # if no container_id on path
         return HttpResponseForbidden()
+
     """
     custom methods of ContainerController
     """
+
     # remove container
     def remove(self,docker_container):
         # first check if container has no containerid
@@ -287,12 +324,17 @@ class ContainerController(View):
         # afterwards delete
         task_delete=Task(task_template=TaskTemplate.objects.get(name='delete'),docker_container=docker_container,status='Ready')
         task_delete.save()
+
     # Get all containers of given user
     def get_all(self,user):
         # return all DockerContainer which are related to the list of DockerHost owned by the user
         return DockerContainer.objects.filter(docker_host__in=DockerHost.objects.filter(user=user)).order_by('id')
+
+    # Get container by id
     def get_by_container_id(self,container_id):
         return DockerContainer.objects.filter(container_id=container_id).first()
+
+    # update status of a given  container
     def update_status(self,docker_container,status):
         # if the status given differs, create a new statushistory record
         if docker_container.status != status:
@@ -315,6 +357,7 @@ class TaskController(View):
     template_name='task.html'
     # context directory to give to view
     context={'task_active':'active','dashboard_active':'active'}
+
     # HTTP GET
     def get(self,request):
         # get all docker hosts of user
@@ -329,12 +372,17 @@ class TaskController(View):
         self.context['docker_host_list']=docker_host_list
         # render template with context
         return render(request,self.template_name,self.context)
+
     """
     Custom methods of TaskController
     """
+
+    # get all tasks for a user
     def get_all_for_user(self,user):
         # return all Tasks for the user ordered by the id DESC
         return Task.objects.filter(docker_container__in=ContainerController().get_all(user)).order_by('-id')
+
+    # get the next task for a given host
     def get_next_task(self,docker_host):
         # return the first task for the docker-host which is Ready
         return Task.objects.filter(docker_container__in=DockerContainer.objects.filter(docker_host=docker_host),status='Ready').order_by('id').first()
@@ -348,10 +396,12 @@ URLs:
     /api
 """
 class ApiController(View):
+
     # HTTP GET
     def get(self,request):
         # 403 (Forbidden) bei GET
         return HttpResponseForbidden()
+
     # HTTP POST
     def post(self,request,*args,**kwargs):
         """
@@ -365,11 +415,16 @@ class ApiController(View):
         json dictionary with result of command - Cleint -> Server - Client gives result of executed command
         """
         try:
+            # load posted data as json
             json_request=json.loads(request.body.decode('utf-8'))
+            # get docker_host by api key
             docker_host=HostController().check_api_key(json_request['api_key'])
+        # if json incorrect
         except(ValueError,KeyError):
             return HttpResponseForbidden()
+        # if json request correct
         if docker_host and 'data' in json_request.keys():
+            # update status
             HostController().update_status(docker_host,'Online')
             # if the requests is on /api/poll
             if request.path=='/api/poll/':
@@ -399,6 +454,7 @@ class ApiController(View):
                 command=command.replace('@@PORT@@',task.docker_container.port)
                 command=command.replace('@@ENVIRONMENT@@',self.create_environment_variables_list(task.docker_container))
                 command=command.replace('@@CONTAINERID@@','"'+task.docker_container.container_id+'"')
+                # set status of task to Sent
                 task.status='Sent'
                 task.save()
                 #return HttpResponse(json.dumps({'data':{'task_id':task.id,'command':command}}))
@@ -415,24 +471,26 @@ class ApiController(View):
         # in all other cases, return HTTP 403
         else:
             return HttpResponseForbidden()
+
     """
     Custom methods of APIController
     """
+
     # create environment variables list
     def create_environment_variables_list(self,docker_container):
-        return_string="{"
+        return_string='{'
         environment_variables=EnvironmentVariable.objects.filter(docker_container=docker_container)
         for var in environment_variables:
             return_string+='"'+var.key+'":"'+var.value+'",'
-        return_string+="}"
+        return_string+='}'
         return return_string
 
 
     # create host_config for Task
     def create_host_config(self,docker_container):
-        return_string=""
+        return_string=''
         if docker_container.port:
-            return_string+="port_bindings={"+docker_container.port+":"+docker_container.port+"},"
+            return_string+='port_bindings={'+docker_container.port+':'+docker_container.port+'},'
         # get Links for this docker container
         links=Link.objects.filter(source=docker_container)
         if links:
@@ -441,13 +499,19 @@ class ApiController(View):
                 return_string+='"'+link.destination.container_id+'":"'+link.destination.name.replace(' ','_')+'",'
             return_string+='}'
         return return_string
+
+    # check for containers which should be deleted
     def check_for_removed_containers(self,docker_host,data):
         container_ids=list()
         for container in data:
+            # append all posted container_ids to list
             container_ids.append(container['Id'])
+        # if container is marked for deletion, and not in the list, delete it.
         for docker_container in DockerContainer.objects.filter(docker_host=docker_host,to_delete=True):
             if docker_container.container_id not in container_ids:
                 docker_container.delete()
+
+    # update container status by given data
     def update_containers(self,data):
         # for every given docker container
         for container in data:
@@ -463,12 +527,18 @@ class ApiController(View):
                     ContainerController().update_status(docker_container,'Running')
                 else:
                     ContainerController().update_status(docker_container,'Stopped')
-    # erhaltenes Result entsprechend interpretieren und status speichern
+
+    # interpret posted result of given task
     def check_result(self,data,task):
+        # get task_type
         task_type=task.task_template.name
+        # get container
         docker_container=task.docker_container
+        # set status to failed
         task.status='Failed'
+        # check all cases which it could be successfull
         if data!='Failed':
+            # for pull
             if task_type == 'pull':
                 try:
                     last_line=data.split('\r\n')[-2]
@@ -477,6 +547,7 @@ class ApiController(View):
                         task.status='Success'
                 except(ValueError,KeyError):
                     pass
+            # for create
             elif task_type == 'create':
                 try:
                     # write Id to container
@@ -485,10 +556,8 @@ class ApiController(View):
                     task.status='Success'
                 except(ValueError,KeyError):
                     pass
-            elif task_type == 'start' or task_type == 'stop':
-                if data==None:
-                    task.status='Success'
-            elif task_type == 'delete':
+            # for start or stop or delete
+            elif task_type == 'start' or task_type == 'stop' or task_type=='delete':
                 if data==None:
                     task.status='Success'
         # save it
@@ -508,22 +577,33 @@ class StatusHistoryController(View):
     template_name='statushistory.html'
     # context used for the view
     context={'statushistory_active':'active','dashboard_active':'active'}
+
+    # HTTP GET
     def get(self,request):
+        # get list of Hosts for given user
         docker_host_list=HostController().get_all(request.user)
+        # get list of containers for given user
         docker_container_list=ContainerController().get_all(request.user)
+        # create a list for all statushistory entries of hosts
         host_statushistory=list()
+        # for every docker host in the list
         for docker_host in docker_host_list:
             for host_status in HostStatusHistory.objects.filter(docker_host=docker_host).order_by('id'):
+                # append all statushistory entries
                 host_statushistory.append(host_status)
+        # create a list for all statushistory entries of containers
         container_statushistory=list()
+        # for every container in list
         for docker_container in docker_container_list:
             for container_status in ContainerstatusHistory.objects.filter(docker_container=docker_container).order_by('id'):
+                # append all statushistory entries
                 container_statushistory.append(container_status)
         # fill directory context
         self.context['docker_host_list']=docker_host_list
         self.context['docker_container_list']=docker_container_list
         self.context['container_statushistory']=container_statushistory
         self.context['host_statushistory']=host_statushistory
+        # return view
         return render(request,self.template_name,self.context)
 
 """
@@ -537,5 +617,7 @@ class AccountController(View):
     template_name='account.html'
     # context used for the view
     context={'account_active':'active'}
+
     def get(self,request):
+        # render view
         return render(request,self.template_name,self.context)
