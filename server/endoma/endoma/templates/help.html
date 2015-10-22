@@ -1,71 +1,71 @@
 {% extends '_default.html' %}
-{% block title %} - Dashboard {% endblock %}
+{% block title %} - Hilfe {% endblock %}
 {% block content %}
 {% include '_header.html' %}
 <div class='row'>
     <div class='col-md-6 col-md-offset-3'>
     <h2>Startseite</h2>
     <img class='help center' src='/static/img/help_startpage.jpg'>
-    <p class='help'>    Die Startseite von EnDoMa ist nicht mehr als eine reine Willkommensseite. Kurz und prägnant wird die Applikation erklärt und auf die Loginseite verwiesen.</p>
+    <p class='help'> Die Startseite von EnDoMa ist nicht mehr als eine reine Willkommensseite. Kurz und prägnant wird die Applikation erklärt und auf die Loginseite verwiesen.</p>
     <h2>Loginseite</h2>
     <img class='help center' src='/static/img/help_login.jpg'>
-    <p class='help'>Auf der Loginseite wird der Benutzer nach Benutzername und Passwort angefragt. Ein erfolgreiches Login leitet der Benutzer direkt auf das Dashboard um. Falls es zu einem fehlerhaftes Login kommt, wird dies entsprechend angezeigt.</p>
+    <p class='help'>Auf der Loginseite wird der Benutzer nach Benutzername und Passwort gefragt. Ein erfolgreiches Login leitet den Benutzer direkt auf das Dashboard um. Falls es zu einem fehlerhaften Login kommt, wird dies entsprechend angezeigt.</p>
     <h2>Dashboard</h2>
     <img class='help center' src='/static/img/help_dashboard.jpg'>
-    <p class='help'>Beim Dashboard werden die vier Hauptmenüs kurz vorgestellt. Der Benutzer kann über den entsprechenden Link in das gewünschte Untermenü zugreiffen.</p>
+    <p class='help'>Beim Dashboard werden die vier Hauptmenüs kurz vorgestellt. Der Benutzer kann über den entsprechenden Link in das gewünschte Untermenü einsteigen.</p>
     <h2>Verwaltung Docker-Hosts</h2>
     <img class='help center' src='/static/img/help_host.jpg'>
-    <p class='help'>Unter Docker-Hosts erreicht man ist eine Auflistung der hinzugefügten Docker-Hosts des eingeloggten Benutzers. Hier kann man sich die Details eines Hosts über das Auge-Symbol anzeigen lassen oder ein neues Host über "Host hinzufügen" in der Liste aufnehmen.</p>
-    <p class='help'>Die Hostliste kann mittels des Filterkästchens nach Wunsch filtriert werden</p>
+    <p class='help'>Unter Docker-Hosts erhält man eine Auflistung der hinzugefügten Docker-Hosts des eingeloggten Benutzers. Hier kann man sich die Details eines Hosts über das Auge-Symbol anzeigen lassen oder einen neuen Host über "Host hinzufügen" in die Liste aufnehmen.</p>
+    <p class='help'>Die Hostliste kann mittels des Filterkästchens nach Wunsch gefiltert werden.</p>
     <h3>Docker-Host hinzufügen</h3>
     <img class='help center' src='/static/img/help_add_host.jpg'>
-    <p class='help'>Beim Hinzufügen eines Hosts muss mindestens ein Name definiert werden. Der Benutzer wird jedenfalls hingewiesen, falls nicht alle erforderlichen Felder ausgefüllt wurden.</p>
-    <p class='help'>Mit ein Klick auf das grüne Plus-Symbol wird der Host hinzugefügt.</p>
+    <p class='help'>Beim Hinzufügen eines Hosts muss mindestens ein Name definiert werden. Der Benutzer wird darauf hingewiesen, falls nicht alle erforderlichen Felder ausgefüllt wurden.</p>
+    <p class='help'>Mit einem Klick auf das grüne Plus-Symbol wird der Host hinzugefügt.</p>
     <img class='help center' src='/static/img/help_after_add_host.jpg'>
-    <p class='help'>Die Liste wird sofort aktualisiert und der neu hinzugefügte Docker-Host ist darunter aufzufinden.<p>
+    <p class='help'>Die Liste wird sofort aktualisiert und der neu hinzugefügte Docker-Host ist am Ende der Liste zu finden.<p>
     <h3>Detailansicht Docker-Host</h3>
     <img class='help center' src='/static/img/help_detail_host.jpg'>
-    <p class='help'>Die Detailansicht eines Hosts erreicht man über das Auge-Symbol auf der Host-Auflistung. Dank dieser Ansicht sind dem Benutzer mehrere Informationen über den Docker-Hosts ersichtlich. Neben Docker-Version, aktueller Status und letzte Aktualsierungszeitpunkt ist auch das generierte API-Key ersichtlich. Diese kann nun dem Benutzer dienen um die korrekte Installation des EnDoMa-Agent gemäss Installationsanleitung vorzunehmen.</p>
-    <p class='help'>Über die Detailansicht kann ein Host auch gelöscht werden. Bei dieser Funktion ist aber Vorsicht zu geniessen, denn bei der Löschung des Hosts werden sich alle darauf befindende Container auch gelöscht.<p>
+    <p class='help'>Die Detailansicht eines Hosts erreicht man über das Auge-Symbol auf der Host-Auflistung. In dieser Ansicht sind detaillierte Informationen des Docker-Hosts ersichtlich. Neben Docker-Version, aktuellem Status und letztem Aktualisierungszeitpunkt ist auch der generierte API-Key ersichtlich. Dieser kann nun dem Benutzer dienen, um die korrekte Installation des EnDoMa-Agent gemäss Installationsanleitung vorzunehmen.</p>
+    <p class='help'>Über die Detailansicht kann ein Host auch gelöscht werden. Diese Funktion ist aber mit Vorsicht zu geniessen, denn bei der Löschung des Hosts werden alle sich darauf befindenden Container auch gelöscht.<p>
     <h2>Verwaltung Docker-Containers</h2>
     <img class='help center' src='/static/img/help_container.jpg'>
-    <p class='help'>Im Untermenü Docker-Container wird eine Auflistung aller hinzugefügten Containers angezeigt. Per Klick auf das Auge-Symbol kann auf die Detailansicht eines Containers gelangt werden, falls mehrere Informationen erwünscht sind oder der Container gestartet, gestoppt oder gelöscht werden möchte.<p>
-    <p class='help'>Die Containerliste kann mittels des Filterkästchens nach Wunsch filtriert werden</p>
+    <p class='help'>Im Untermenü Docker-Containers wird eine Auflistung aller hinzugefügter Container angezeigt. Per Klick auf das Auge-Symbol kann auf die Detailansicht eines Containers gelangt werden, falls mehr Informationen erwünscht sind oder der Container gestartet, gestoppt oder gelöscht werden soll.<p>
+    <p class='help'>Die Containerliste kann mittels des Filterkästchens nach Wunsch filtriert werden.</p>
     <h3>Docker-Container hinzufügen</h3>
     <img class='help center' src='/static/img/help_add_container.jpg'>
     <p class='help'>Ein neuer Container kann mittels "Container hinzufügen" addiert werden. Der Name, die Eingabe des gewünschten Docker-Image und die Auswahl eines Hosts sind Pflicht für die erfolgreiche Erstellung des Containers. Eine Auswahl an Docker-Images ist im <a href='https://hub.docker.com/'>Docker Registry</a> zu finden.<p>
-    <p class='help'>Optional kann noch ein Port angegeben werden, welcher dann vom Docker-Host auf das Docker-Container weitergeleitet wird.</p>
-    <p class='help'>Der Benutzer darf auch eine Verknüpfung mit einem anderen, bereits auf dem ausgewählten Host bestehenden Container erstellen. Dies wird erreicht durch Auswahl des gewünschten Container im Dropdown-Feld "Links". Danach kann mittels des blauen "Plus-Zeichen" die Verknüpfung hinzugefügt werden.</p>
-    <p class='help'>Zum Schluss kann noch eine oder mehrere Umgebungsvariablen hinzugefügt werden. Schlüssel und Wert werden in den entsprechenden Felder eingegeben und mittels Klick auf den blauen "Plus-Zeichen" hinzugefügt</p>
-    <p class='help'>Mit dem Betätigen des grünen "Hinzufügen-Taste" wird der Container auf die Datenbank geschrieben und die entsprechenden Aufträge werden erstellt um das gewählte Image auf den Host herunterzuladen und den Container zu erstellten.</p>
+    <p class='help'>Optional kann ein Port angegeben werden, welcher dann vom Docker-Host auf den Docker-Container weitergeleitet wird.</p>
+    <p class='help'>Der Benutzer darf auch eine Verknüpfung mit einem anderen, bereits auf dem ausgewählten Host bestehenden Containern erstellen. Dies wird erreicht durch Auswahl des gewünschten Containers im Dropdown-Feld "Links". Danach kann mittels des blauen "Plus-Zeichen" die Verknüpfung hinzugefügt werden.</p>
+    <p class='help'>Zum Schluss können noch eine oder mehrere Umgebungsvariablen hinzugefügt werden. Schlüssel und Wert werden in den entsprechenden Feldern eingegeben und mittels Klick auf das blauen "Plus-Zeichen" hinzugefügt.</p>
+    <p class='help'>Mit dem Betätigen der grünen "Hinzufügen"-Taste wird der Container in der Datenbank erfasst und die entsprechenden Aufträge werden erstellt um das gewählte Image auf den Host herunterzuladen und den Container zu erstellten.</p>
     <img class='help center' src='/static/img/help_after_add_container.jpg'>
-    <p class='help'>Der neue Container erscheint sofort in der Auflistung, bleibt aber, bis es nicht auf dem Host erstellt wurde, im Status "Uknown".</p>
+    <p class='help'>Der neue Container erscheint sofort in der Auflistung, bleibt aber, bis er auf dem Host erstellt wurde, im Status "Uknown".</p>
     <img class='help center' src='/static/img/help_stopped_container.jpg'>
     <p class='help'>Nachdem die Erstellungsaufträge abgearbeitet wurden, wird der Container zum Status "Stopped" wechseln.</p>
     <h3>Detailansicht Docker-Container</h3>
     <img class='help center' src='/static/img/help_detail_container.jpg'>
-    <p class='help'>Mit Klick auf den "Auge-Symbol" gelangt mann zur Detailansicht des Containers. Hier kann der Container auch gestartet, gestoppt oder gelöscht werden.</p>
+    <p class='help'>Mit Klick auf den "Auge-Symbol" gelangt man zur Detailansicht des Containers. Hier kann der Container auch gestartet, gestoppt oder gelöscht werden.</p>
     <h3>Docker-Container starten</h3>
-    <p class='help'>Durch wählen der Funktion 'starten' wird dem Docker-Host einen Auftrag übergeben um den Container zu starten.
+    <p class='help'>Durch wählen der Funktion 'starten' wird dem Docker-Host ein Auftrag übergeben um den Container zu starten.</p>
     <img class='help center' src='/static/img/help_started_container.jpg'>
-    <p class='help'>Sobald der Container gestartet werden konnte, rescheint er in der Auflistung und Detailansicht mit dem Status "Running".</p>
+    <p class='help'>Sobald der Container gestartet werden konnte, erscheint er in der Auflistung und Detailansicht mit dem Status "Running".</p>
     <h2>Docker-Container oder Docker-Host löschen</h2>
     <img class='help center' src='/static/img/help_delete.jpg'>
-    <p class='help'>Mit der Taste "delete" Können Container oder gesamte Hosts gelöscht werden. Diese werden Zur Entfernung markiert und sind sobald die Löschnung erfolgreich durchgeführt wurde nicht mehr ersichtlich.</p>
+    <p class='help'>Mit der Taste "delete" Können Container oder gesamte Hosts gelöscht werden. Diese werden Zur Entfernung markiert und sind, sobald die Löschung erfolgreich durchgeführt wurde, nicht mehr ersichtlich.</p>
     <img class='help center' src='/static/img/help_mark_deletion.jpg'>
-    <p class='help'>Zu Beachten gilt, dass bei der Löschung eines gesamten Hosts, alle dem Host gehörende Docker-Container auch zur Entfernung markiert werden.</p>
+    <p class='help'>Es ist zu beachten, dass bei der Löschung eines gesamten Hosts alle zum Host gehörenden Docker-Container ebenfalls zur Entfernung markiert werden.</p>
     <h2>Tasks anzeigen</h2>
     <img class='help center' src='/static/img/help_tasks.jpg'>
-    <p class='help'>Die Aufträge können mittels des Filterkästchens nach Wunsch filtriert werden</p>
+    <p class='help'>Die Tasks, welche dem Docker-Host übermittelt werden, sind im Untermenü "Tasks" zu finden. Hier sieht der Benutzer den Auftragstyp und ob der Status "Ready", "Sent", "Success" oder "Failed" ist. Die Aufträge können mittels des Filterkästchens nach Wunsch gefiltert werden.</p>
     <h2>Statusverlauf anzeigen</h2>
     <img class='help center' src='/static/img/help_statushistory.jpg'>
-    <p class='help'>Die Statusverlaufeinträge können mittels des Filterkästchens nach Wunsch filtriert werden</p>
+    <p class='help'>Unter dem Menüpunkt "Statusverlauf" werden zwei Statusänderungstabellen aufgelistet, eine für die Container und eine für die Hosts. Dem Benutzer ist ersichtlich wie sich der Status verändert hat und zu welcher Zeit. Die Statusverlaufseinträge können mittels des Filterkästchens nach Wunsch gefiltert werden.</p>
     <h2>Benutzerkonto</h2>
     <img class='help center' src='/static/img/help_account.jpg'>
-    Beim Benutzerkonto Menü sind dem Benutzer seine Kontaktdaten ersichtlich.
+    <p class='help'>Unter dem Benutzerkonto-Menü sind die Kontaktdaten des Benutzers ersichtlich.</p>
     <h2>Logout</h2>
     <img class='help center' src='/static/img/help_logout.jpg'>
-    <p class='help'>Über das Logout Knopf oben rechts kann sich der Benutzer von EnDoMa ausloggen.</p>
+    <p class='help'>Über den Ausloggen-Knopf oben rechts kann sich der Benutzer von der Applikation ausloggen.</p>
     </div>
 </div>
 {% endblock %}

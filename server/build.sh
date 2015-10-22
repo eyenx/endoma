@@ -10,14 +10,14 @@ TMPFILE=/tmp/create_db.sql
 echo -e "\n====================================="
 echo 1. building the container
 echo -e "=====================================\n"
-docker build -t endoma_server . 
+docker build -t endoma_server .
 # start a new database
 echo -e "\n====================================="
 echo 2. starting the database
 echo -e "=====================================\n"
 docker run -d --name endoma_db -e POSTGRES_PASSWORD=$PG_ROOT_PWD postgres
 # wait for it to initialize
-sleep 10
+sleep 45
 # create tmp file to read
 > $TMPFILE
 echo CREATE USER endoma WITH PASSWORD \'$ENDOMA_DB_PWD\'\; >> $TMPFILE
@@ -44,6 +44,6 @@ echo -e "=====================================\n"
 echo docker run -e DB_PASSWORD=$ENDOMA_DB_PWD -ti --link endoma_db:endoma_db endoma_server python manage.py createsuperuser
 # output info
 echo -e "\n====================================="
-echo "7. Start the container with this command" 
+echo "7. Start the container with this command"
 echo -e "=====================================\n"
 echo docker run -e DB_PASSWORD=$ENDOMA_DB_PWD -d --name endoma_server -p 8000:8000 --link endoma_db:endoma_db endoma_server

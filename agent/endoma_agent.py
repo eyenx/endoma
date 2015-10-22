@@ -11,9 +11,9 @@ import json
 import requests
 import time
 # API URL which is to be used (must end with /api/)
-api_url='http://localhost:8080/api/'
+api_url='http://HOST:PORT/api/'
 # API Key defined by the EnDoMa-Application
-api_key='w2qFN53gOjLF2PfiMFbNbtwdqjJyy7IG'
+api_key='API_KEY'
 # request timeout
 timeout=60
 # Start a new client

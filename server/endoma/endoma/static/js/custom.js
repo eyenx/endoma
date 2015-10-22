@@ -15,6 +15,8 @@ $('#startbtn').click(function(){
         data:'{"action":"start"}',
         method:'PUT',
     });
+    // go back to dashboard
+    window.history.back();
 });
 // on stop button click
 $('#stopbtn').click(function(){
@@ -24,6 +26,8 @@ $('#stopbtn').click(function(){
         data:'{"action":"stop"}',
         method:'PUT',
     });
+    // go back to dashboard
+    window.history.back();
 });
 // on delete button click
 $('#deletebtn').click(function(){
@@ -32,6 +36,8 @@ $('#deletebtn').click(function(){
         headers:{'X-CSRFToken':csrftoken},
         method:'DELETE'
     });
+    // go back to dashboard
+    window.history.back();
 });
 // filter used for tables
 $('#filter_table').keyup(function () {
